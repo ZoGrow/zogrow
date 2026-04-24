@@ -21,6 +21,7 @@ import ISAPerformance from "@/pages/ISAPerformance";
 import Auth from "@/pages/Auth";
 import Integrations from "@/pages/Integrations";
 import NotFound from "@/pages/NotFound";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
