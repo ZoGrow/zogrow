@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const B2B_AD_ACCOUNT_ID = "act_1066517286536273";
+const DEFAULT_B2B_AD_ACCOUNT_ID = "act_1066517286536273";
 
 interface MetaInsight {
   date_start: string;
@@ -91,7 +91,18 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json().catch(() => ({}));
-    const backfillDays = body.backfill_days || 0;
+    const backfillDays = body.backfill_days || body.days || 0;
+
+    // Load ad account ID from app_settings (fallback to default)
+    let B2B_AD_ACCOUNT_ID = DEFAULT_B2B_AD_ACCOUNT_ID;
+    const { data: setting } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "b2b_meta_ad_account_id")
+      .maybeSingle();
+    if (setting?.value && typeof setting.value === "string" && setting.value.trim()) {
+      B2B_AD_ACCOUNT_ID = setting.value.trim();
+    }
 
     let daysSynced = 0;
 

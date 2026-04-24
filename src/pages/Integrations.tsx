@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +56,42 @@ export default function Integrations() {
   const [syncingMeta, setSyncingMeta] = useState(false);
   const [syncingB2B, setSyncingB2B] = useState(false);
   const [days, setDays] = useState(30);
+  const [b2bAdAccountId, setB2bAdAccountId] = useState("");
+  const [savingB2bId, setSavingB2bId] = useState(false);
+  const [loadingB2bId, setLoadingB2bId] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "b2b_meta_ad_account_id")
+        .maybeSingle();
+      if (data?.value) setB2bAdAccountId(data.value);
+      setLoadingB2bId(false);
+    })();
+  }, []);
+
+  const saveB2bAdAccountId = async () => {
+    const trimmed = b2bAdAccountId.trim();
+    if (!trimmed) {
+      toast.error("Ad account ID is required");
+      return;
+    }
+    setSavingB2bId(true);
+    try {
+      const { error } = await supabase
+        .from("app_settings")
+        .upsert({ key: "b2b_meta_ad_account_id", value: trimmed }, { onConflict: "key" });
+      if (error) throw error;
+      toast.success("B2B ad account ID saved");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to save";
+      toast.error("Save failed", { description: msg });
+    } finally {
+      setSavingB2bId(false);
+    }
+  };
 
   const runSync = async (fn: "sync-meta-ads" | "sync-b2b-ads") => {
     const setLoading = fn === "sync-meta-ads" ? setSyncingMeta : setSyncingB2B;
@@ -126,12 +162,35 @@ export default function Integrations() {
             <Button
               variant="secondary"
               onClick={() => runSync("sync-b2b-ads")}
-              disabled={syncingB2B}
+              disabled={syncingB2B || !b2bAdAccountId.trim()}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${syncingB2B ? "animate-spin" : ""}`} />
               {syncingB2B ? "Syncing…" : "Sync B2B Ads"}
             </Button>
           </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label htmlFor="b2b-ad-account">B2B Meta Ad Account ID</Label>
+            <p className="text-xs text-muted-foreground">
+              Used by the B2B Ads sync. Format: <code className="px-1 py-0.5 rounded bg-muted text-foreground">act_XXXXXXXXX</code>
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                id="b2b-ad-account"
+                placeholder="act_1234567890"
+                value={b2bAdAccountId}
+                onChange={(e) => setB2bAdAccountId(e.target.value)}
+                disabled={loadingB2bId}
+                className="max-w-sm font-mono"
+              />
+              <Button onClick={saveB2bAdAccountId} disabled={savingB2bId || loadingB2bId}>
+                {savingB2bId ? "Saving…" : "Save"}
+              </Button>
+            </div>
+          </div>
+
           <p className="text-xs text-muted-foreground">
             To rotate the Meta access token, open backend secrets and update{" "}
             <code className="px-1 py-0.5 rounded bg-muted text-foreground">META_ACCESS_TOKEN</code>.
