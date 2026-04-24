@@ -1,0 +1,2 @@
+ALTER TABLE public.campaigns ADD COLUMN IF NOT EXISTS meta_campaign_id text;
+CREATE UNIQUE INDEX IF NOT EXISTS campaigns_client_meta_campaign_unique ON public.campaigns (client_id, meta_campaign_id) WHERE meta_campaign_id IS NOT NULL;

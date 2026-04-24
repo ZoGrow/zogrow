@@ -1,0 +1,1 @@
+ALTER TABLE public.clients ADD COLUMN meta_ad_account_id text DEFAULT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE public.b2b_ads_metrics ADD COLUMN qualified_intro_showed integer DEFAULT 0;

@@ -1,0 +1,1 @@
+ALTER TABLE public.metrics ADD COLUMN live_transfers integer DEFAULT 0;
