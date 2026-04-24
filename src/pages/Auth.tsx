@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const authSchema = z.object({
@@ -69,6 +70,30 @@ export default function Auth() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    const emailCheck = z.string().email("Enter your email first").safeParse(email);
+
+    if (!emailCheck.success) {
+      toast.error(emailCheck.error.errors[0].message);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success("Password reset email sent");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -127,6 +152,15 @@ export default function Auth() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto px-0"
+                onClick={handleForgotPassword}
+                disabled={isSubmitting}
+              >
+                Forgot password?
+              </Button>
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Signing in..." : "Sign In"}
