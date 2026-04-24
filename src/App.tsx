@@ -19,6 +19,7 @@ import SalesDailyGrid from "@/pages/SalesDailyGrid";
 import B2BAds from "@/pages/B2BAds";
 import ISAPerformance from "@/pages/ISAPerformance";
 import Auth from "@/pages/Auth";
+import Integrations from "@/pages/Integrations";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
