@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
         .insert({ date: today, dials_made: increment });
     }
 
-    // Log individual dial event
+    // Log individual dial event (with idempotency)
     const callerPhone = body.customData?.call_from || body.call_from || null;
     const callerName = body.customData?.caller_name || body.caller_name || null;
     const contactName = body.full_name || body.contact_name || body.contactName || null;
@@ -144,17 +144,44 @@ Deno.serve(async (req) => {
     const callStatus = body.customData?.call_status || body.call_status || null;
     const callDirection = body.customData?.call_direction || body.call_direction || "outbound";
 
-    const { error: logError } = await supabase.from("dial_logs").insert({
-      client_id: resolvedClientId,
-      caller_phone: callerPhone,
-      caller_name: callerName,
-      contact_name: contactName,
-      contact_phone: contactPhone,
-      call_status: callStatus,
-      call_direction: callDirection,
-      raw_payload: body,
-    });
-    if (logError) console.error("Failed to log dial:", logError);
+    const externalEventId =
+      body.event_id || body.eventId || body.webhook_id || body.call_id || body.id || null;
+
+    if (externalEventId) {
+      const { data: dupe } = await supabase
+        .from("dial_logs")
+        .select("id")
+        .eq("external_event_id", externalEventId)
+        .limit(1);
+      if (dupe && dupe.length > 0) {
+        console.log(`Duplicate dial ignored (event_id): ${externalEventId}`);
+      } else {
+        const { error: logError } = await supabase.from("dial_logs").insert({
+          client_id: resolvedClientId,
+          caller_phone: callerPhone,
+          caller_name: callerName,
+          contact_name: contactName,
+          contact_phone: contactPhone,
+          call_status: callStatus,
+          call_direction: callDirection,
+          raw_payload: body,
+          external_event_id: externalEventId,
+        });
+        if (logError) console.error("Failed to log dial:", logError);
+      }
+    } else {
+      const { error: logError } = await supabase.from("dial_logs").insert({
+        client_id: resolvedClientId,
+        caller_phone: callerPhone,
+        caller_name: callerName,
+        contact_name: contactName,
+        contact_phone: contactPhone,
+        call_status: callStatus,
+        call_direction: callDirection,
+        raw_payload: body,
+      });
+      if (logError) console.error("Failed to log dial:", logError);
+    }
 
     return new Response(
       JSON.stringify({ success: true, metric: "dials_made", client_id: resolvedClientId, incremented_by: increment, ...result }),

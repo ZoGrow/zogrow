@@ -91,7 +91,27 @@ Deno.serve(async (req) => {
     // Use the event timestamp if provided, otherwise now()
     const receivedAt = body.date_created || body.dateCreated || body.timestamp || new Date().toISOString();
 
-    // Check for duplicate by contact_id to avoid double-logging
+    // Idempotency key — prefer explicit event id, fall back to client+contact+timestamp signature
+    const externalEventId =
+      body.event_id || body.eventId || body.webhook_id || body.id ||
+      (contactId ? `${resolvedClientId}:${contactId}:${receivedAt}` : null);
+
+    // Check for duplicate by idempotency key first, then by contact_id
+    if (externalEventId) {
+      const { data: existing } = await supabase
+        .from("lead_logs")
+        .select("id")
+        .eq("external_event_id", externalEventId)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        console.log(`Duplicate lead ignored (event_id): ${externalEventId}`);
+        return new Response(
+          JSON.stringify({ success: true, duplicate: true, lead_log_id: existing[0].id }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
     if (contactId) {
       const { data: existing } = await supabase
         .from("lead_logs")
@@ -119,6 +139,7 @@ Deno.serve(async (req) => {
       source,
       received_at: receivedAt,
       raw_payload: body,
+      external_event_id: externalEventId,
     }).select();
 
     if (error) throw error;
