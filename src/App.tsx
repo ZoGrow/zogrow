@@ -21,6 +21,7 @@ import ISAPerformance from "@/pages/ISAPerformance";
 import Auth from "@/pages/Auth";
 import Integrations from "@/pages/Integrations";
 import NotFound from "@/pages/NotFound";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={<Auth />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         element={
           <ProtectedRoute>
