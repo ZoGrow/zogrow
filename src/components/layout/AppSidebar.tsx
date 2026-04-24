@@ -41,7 +41,7 @@ const clientMetricsItems = [
 ];
 
 const salesItems = [
-  { title: "Sales Dashboard", url: "/sales", icon: Phone },
+  { title: "B2B Dashboard", url: "/sales", icon: Phone },
   { title: "Monthly View", url: "/sales/monthly", icon: CalendarRange },
   { title: "Daily Grid", url: "/sales/daily-grid", icon: Grid3X3 },
   { title: "B2B Ads", url: "/sales/b2b-ads", icon: TrendingUp },
