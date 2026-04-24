@@ -22,14 +22,14 @@ import {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 const WEBHOOKS = [
-  { name: "Lead Received", path: "webhook-lead-received", description: "GHL → new lead created" },
-  { name: "Appointment Booked", path: "webhook-appointment", description: "GHL → appointment booked" },
-  { name: "Live Transfer", path: "webhook-live-transfer", description: "Live transfer event" },
-  { name: "Sales Team Booked", path: "webhook-sales-team-booked", description: "Sales team booked call" },
-  { name: "B2B Dial", path: "webhook-b2b-dial", description: "B2B outbound dial logged" },
-  { name: "B2B Pickup", path: "webhook-b2b-pickup", description: "B2B call answered" },
-  { name: "B2B Intro Booked", path: "webhook-b2b-intro", description: "B2B intro call booked" },
-  { name: "B2B Demo Booked", path: "webhook-b2b-demo", description: "B2B demo booked" },
+  { name: "Lead Received", path: "zogrow-lead-received", description: "GHL → new lead created" },
+  { name: "Appointment Booked", path: "zogrow-appointment", description: "GHL → appointment booked" },
+  { name: "Live Transfer", path: "zogrow-live-transfer", description: "Live transfer event" },
+  { name: "Sales Team Booked", path: "zogrow-sales-team-booked", description: "Sales team booked call" },
+  { name: "B2B Dial", path: "zogrow-b2b-dial", description: "B2B outbound dial logged" },
+  { name: "B2B Pickup", path: "zogrow-b2b-pickup", description: "B2B call answered" },
+  { name: "B2B Intro Booked", path: "zogrow-b2b-intro", description: "B2B intro call booked" },
+  { name: "B2B Demo Booked", path: "zogrow-b2b-demo", description: "B2B demo booked" },
 ];
 
 function CopyButton({ value }: { value: string }) {
