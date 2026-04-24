@@ -35,6 +35,39 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          id: number
+          new_data: Json | null
+          occurred_at: string
+          old_data: Json | null
+          row_id: string | null
+          table_name: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          id?: number
+          new_data?: Json | null
+          occurred_at?: string
+          old_data?: Json | null
+          row_id?: string | null
+          table_name: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          id?: number
+          new_data?: Json | null
+          occurred_at?: string
+          old_data?: Json | null
+          row_id?: string | null
+          table_name?: string
+        }
+        Relationships: []
+      }
       b2b_ads_metrics: {
         Row: {
           ad_spend: number | null
@@ -42,6 +75,7 @@ export type Database = {
           appointments_showed: number | null
           cash_collected: number | null
           clicks: number | null
+          client_id: string | null
           contracts_signed: number | null
           created_at: string
           date: string
@@ -68,6 +102,7 @@ export type Database = {
           appointments_showed?: number | null
           cash_collected?: number | null
           clicks?: number | null
+          client_id?: string | null
           contracts_signed?: number | null
           created_at?: string
           date: string
@@ -94,6 +129,7 @@ export type Database = {
           appointments_showed?: number | null
           cash_collected?: number | null
           clicks?: number | null
+          client_id?: string | null
           contracts_signed?: number | null
           created_at?: string
           date?: string
@@ -114,12 +150,21 @@ export type Database = {
           revenue?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "b2b_ads_metrics_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       b2b_lead_bookings: {
         Row: {
           booking_count: number
           booking_type: string
+          client_id: string | null
           contact_id: string
           first_booked_at: string
           id: string
@@ -128,6 +173,7 @@ export type Database = {
         Insert: {
           booking_count?: number
           booking_type: string
+          client_id?: string | null
           contact_id: string
           first_booked_at?: string
           id?: string
@@ -136,12 +182,21 @@ export type Database = {
         Update: {
           booking_count?: number
           booking_type?: string
+          client_id?: string | null
           contact_id?: string
           first_booked_at?: string
           id?: string
           latest_booked_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "b2b_lead_bookings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       campaigns: {
         Row: {
@@ -234,6 +289,7 @@ export type Database = {
           contact_phone: string | null
           created_at: string
           dialed_at: string
+          external_event_id: string | null
           id: string
           raw_payload: Json | null
         }
@@ -247,6 +303,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           dialed_at?: string
+          external_event_id?: string | null
           id?: string
           raw_payload?: Json | null
         }
@@ -260,6 +317,7 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           dialed_at?: string
+          external_event_id?: string | null
           id?: string
           raw_payload?: Json | null
         }
@@ -281,6 +339,7 @@ export type Database = {
           contact_name: string | null
           contact_phone: string | null
           created_at: string
+          external_event_id: string | null
           id: string
           raw_payload: Json | null
           received_at: string
@@ -293,6 +352,7 @@ export type Database = {
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          external_event_id?: string | null
           id?: string
           raw_payload?: Json | null
           received_at?: string
@@ -305,6 +365,7 @@ export type Database = {
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
+          external_event_id?: string | null
           id?: string
           raw_payload?: Json | null
           received_at?: string
@@ -458,6 +519,7 @@ export type Database = {
           base_starting_mrr: number | null
           cancelled: number | null
           cash_committed: number | null
+          client_id: string | null
           created_at: string
           date: string
           followup_calls_scheduled: number | null
@@ -484,6 +546,7 @@ export type Database = {
           base_starting_mrr?: number | null
           cancelled?: number | null
           cash_committed?: number | null
+          client_id?: string | null
           created_at?: string
           date: string
           followup_calls_scheduled?: number | null
@@ -510,6 +573,7 @@ export type Database = {
           base_starting_mrr?: number | null
           cancelled?: number | null
           cash_committed?: number | null
+          client_id?: string | null
           created_at?: string
           date?: string
           followup_calls_scheduled?: number | null
@@ -531,7 +595,15 @@ export type Database = {
           updated_at?: string
           upsell_mrr?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_metrics_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
