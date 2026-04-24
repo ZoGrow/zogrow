@@ -15,6 +15,7 @@ import {
   Megaphone
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
+import logo from "@/assets/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -59,14 +60,14 @@ export function AppSidebar() {
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="p-6">
         <NavLink to="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary glow-primary">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-background border border-border overflow-hidden">
+            <img src={logo} alt="Zogrow logo" className="h-8 w-8 object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
-              RizenEstate
+              Zogrow
             </span>
-            <span className="text-xs text-muted-foreground">Metrics Hub</span>
+            <span className="text-xs text-muted-foreground">Metric Hub</span>
           </div>
         </NavLink>
       </SidebarHeader>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,13 +82,13 @@ export default function Auth() {
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary glow-primary">
-              <Building2 className="h-7 w-7 text-primary-foreground" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-background border border-border overflow-hidden glow-primary">
+              <img src={logo} alt="Zogrow logo" className="h-12 w-12 object-contain" />
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold gradient-text">RizenEstate</CardTitle>
-            <CardDescription className="mt-2">Metrics Hub</CardDescription>
+            <CardTitle className="text-2xl font-bold gradient-text">Zogrow</CardTitle>
+            <CardDescription className="mt-2">Metric Hub</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
