@@ -12,7 +12,8 @@ import {
   CalendarRange,
   Grid3X3,
   Headphones,
-  Megaphone
+  Megaphone,
+  Plug
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -47,6 +48,7 @@ const salesItems = [
 ];
 
 const settingsItems = [
+  { title: "Integrations", url: "/integrations", icon: Plug },
   { title: "Users", url: "/users", icon: UserPlus },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
