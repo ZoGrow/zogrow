@@ -34,7 +34,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 
 const clientMetricsItems = [
-  { title: "Agency Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "B2C Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "ISA Performance", url: "/isa-performance", icon: Headphones },
   { title: "Leaderboards", url: "/leaderboards", icon: Trophy },
