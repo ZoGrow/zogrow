@@ -174,6 +174,7 @@ export default function SMSOutreach() {
         demos_showed: acc.demos_showed + (m.demos_showed || 0),
         deals_closed: acc.deals_closed + (m.deals_closed || 0),
         revenue: acc.revenue + Number(m.revenue || 0),
+        sms_spend: acc.sms_spend + Number(m.sms_spend || 0),
       }),
       {
         messages_sent: 0,
@@ -185,6 +186,7 @@ export default function SMSOutreach() {
         demos_showed: 0,
         deals_closed: 0,
         revenue: 0,
+        sms_spend: 0,
       }
     );
   }, [metrics]);
