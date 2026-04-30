@@ -325,6 +325,15 @@ export default function SMSOutreach() {
           : undefined,
       icon: DollarSign,
     },
+    {
+      label: "SMS Spend",
+      value: `$${totals.sms_spend.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      sub:
+        totals.sms_spend > 0
+          ? `${(totals.revenue > 0 ? totals.revenue / totals.sms_spend : 0).toFixed(2)}x ROAS`
+          : undefined,
+      icon: DollarSign,
+    },
   ];
 
   return (
