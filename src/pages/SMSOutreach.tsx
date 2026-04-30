@@ -75,6 +75,7 @@ interface FormData {
   demos_showed: string;
   deals_closed: string;
   revenue: string;
+  sms_spend: string;
   notes: string;
 }
 
