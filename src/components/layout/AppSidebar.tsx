@@ -13,7 +13,8 @@ import {
   Grid3X3,
   Headphones,
   Megaphone,
-  Plug
+  Plug,
+  MessageSquare
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -45,6 +46,7 @@ const salesItems = [
   { title: "Monthly View", url: "/sales/monthly", icon: CalendarRange },
   { title: "Daily Grid", url: "/sales/daily-grid", icon: Grid3X3 },
   { title: "B2B Ads", url: "/sales/b2b-ads", icon: TrendingUp },
+  { title: "SMS Outreach", url: "/sales/sms-outreach", icon: MessageSquare },
 ];
 
 const settingsItems = [

@@ -605,6 +605,57 @@ export type Database = {
           },
         ]
       }
+      sms_outreach_metrics: {
+        Row: {
+          created_at: string
+          date: string
+          deals_closed: number | null
+          demos_booked: number | null
+          demos_showed: number | null
+          id: string
+          messages_sent: number | null
+          notes: string | null
+          positive_responses: number | null
+          responses: number | null
+          revenue: number | null
+          sdr_calls_booked: number | null
+          sdr_calls_showed: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          deals_closed?: number | null
+          demos_booked?: number | null
+          demos_showed?: number | null
+          id?: string
+          messages_sent?: number | null
+          notes?: string | null
+          positive_responses?: number | null
+          responses?: number | null
+          revenue?: number | null
+          sdr_calls_booked?: number | null
+          sdr_calls_showed?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          deals_closed?: number | null
+          demos_booked?: number | null
+          demos_showed?: number | null
+          id?: string
+          messages_sent?: number | null
+          notes?: string | null
+          positive_responses?: number | null
+          responses?: number | null
+          revenue?: number | null
+          sdr_calls_booked?: number | null
+          sdr_calls_showed?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
