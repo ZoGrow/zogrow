@@ -17,6 +17,7 @@ import SalesEntry from "@/pages/SalesEntry";
 import SalesMonthly from "@/pages/SalesMonthly";
 import SalesDailyGrid from "@/pages/SalesDailyGrid";
 import B2BAds from "@/pages/B2BAds";
+import SMSOutreach from "@/pages/SMSOutreach";
 import ISAPerformance from "@/pages/ISAPerformance";
 import Auth from "@/pages/Auth";
 import Integrations from "@/pages/Integrations";
@@ -67,6 +68,7 @@ const AppRoutes = () => {
         <Route path="/sales/monthly" element={<SalesMonthly />} />
         <Route path="/sales/daily-grid" element={<SalesDailyGrid />} />
         <Route path="/sales/b2b-ads" element={<B2BAds />} />
+        <Route path="/sales/sms-outreach" element={<SMSOutreach />} />
         <Route path="/integrations" element={<Integrations />} />
       </Route>
       <Route path="*" element={<NotFound />} />
