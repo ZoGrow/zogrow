@@ -625,6 +625,7 @@ export type Database = {
           sdr_calls_booked: number | null
           sdr_calls_showed: number | null
           sdr_name: string | null
+          sms_spend: number | null
           source: string | null
           updated_at: string
         }
@@ -647,6 +648,7 @@ export type Database = {
           sdr_calls_booked?: number | null
           sdr_calls_showed?: number | null
           sdr_name?: string | null
+          sms_spend?: number | null
           source?: string | null
           updated_at?: string
         }
@@ -669,6 +671,7 @@ export type Database = {
           sdr_calls_booked?: number | null
           sdr_calls_showed?: number | null
           sdr_name?: string | null
+          sms_spend?: number | null
           source?: string | null
           updated_at?: string
         }

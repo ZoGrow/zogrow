@@ -56,6 +56,7 @@ interface SMSMetric {
   demos_showed: number;
   deals_closed: number;
   revenue: number;
+  sms_spend: number;
   intros_rescheduled: number;
   intro_attempts: number;
   power_dials: number;
@@ -74,6 +75,7 @@ interface FormData {
   demos_showed: string;
   deals_closed: string;
   revenue: string;
+  sms_spend: string;
   notes: string;
 }
 
@@ -88,6 +90,7 @@ const blankForm = (): FormData => ({
   demos_showed: "",
   deals_closed: "",
   revenue: "",
+  sms_spend: "",
   notes: "",
 });
 
@@ -171,6 +174,7 @@ export default function SMSOutreach() {
         demos_showed: acc.demos_showed + (m.demos_showed || 0),
         deals_closed: acc.deals_closed + (m.deals_closed || 0),
         revenue: acc.revenue + Number(m.revenue || 0),
+        sms_spend: acc.sms_spend + Number(m.sms_spend || 0),
       }),
       {
         messages_sent: 0,
@@ -182,6 +186,7 @@ export default function SMSOutreach() {
         demos_showed: 0,
         deals_closed: 0,
         revenue: 0,
+        sms_spend: 0,
       }
     );
   }, [metrics]);
@@ -206,6 +211,7 @@ export default function SMSOutreach() {
       demos_showed: String(m.demos_showed || ""),
       deals_closed: String(m.deals_closed || ""),
       revenue: String(m.revenue || ""),
+      sms_spend: String(m.sms_spend || ""),
       notes: m.notes || "",
     });
     setDialogOpen(true);
@@ -223,6 +229,7 @@ export default function SMSOutreach() {
       demos_showed: parseInt(form.demos_showed) || 0,
       deals_closed: parseInt(form.deals_closed) || 0,
       revenue: parseFloat(form.revenue) || 0,
+      sms_spend: parseFloat(form.sms_spend) || 0,
       notes: form.notes || null,
     };
 
@@ -318,6 +325,15 @@ export default function SMSOutreach() {
           : undefined,
       icon: DollarSign,
     },
+    {
+      label: "SMS Spend",
+      value: `$${totals.sms_spend.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+      sub:
+        totals.sms_spend > 0
+          ? `${(totals.revenue > 0 ? totals.revenue / totals.sms_spend : 0).toFixed(2)}x ROAS`
+          : undefined,
+      icon: DollarSign,
+    },
   ];
 
   return (
@@ -392,6 +408,7 @@ export default function SMSOutreach() {
                     <TableHead className="text-right">Demo Showed</TableHead>
                     <TableHead className="text-right">Closed</TableHead>
                     <TableHead className="text-right">Revenue</TableHead>
+                    <TableHead className="text-right">SMS Spend</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -414,6 +431,9 @@ export default function SMSOutreach() {
                       <TableCell className="text-right">{m.deals_closed}</TableCell>
                       <TableCell className="text-right">
                         ${Number(m.revenue || 0).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ${Number(m.sms_spend || 0).toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -553,7 +573,7 @@ export default function SMSOutreach() {
                   onChange={(e) => setForm({ ...form, deals_closed: e.target.value })}
                 />
               </div>
-              <div className="col-span-2">
+              <div>
                 <Label>Revenue ($)</Label>
                 <Input
                   type="number"
@@ -561,6 +581,16 @@ export default function SMSOutreach() {
                   step="0.01"
                   value={form.revenue}
                   onChange={(e) => setForm({ ...form, revenue: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>SMS Spend ($)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.sms_spend}
+                  onChange={(e) => setForm({ ...form, sms_spend: e.target.value })}
                 />
               </div>
             </div>
