@@ -1,0 +1,1 @@
+ALTER TABLE public.sms_outreach_metrics ADD COLUMN IF NOT EXISTS sms_spend numeric DEFAULT 0;
