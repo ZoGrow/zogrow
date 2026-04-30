@@ -613,13 +613,19 @@ export type Database = {
           demos_booked: number | null
           demos_showed: number | null
           id: string
+          intro_attempts: number | null
+          intros_rescheduled: number | null
           messages_sent: number | null
+          monday_item_id: string | null
           notes: string | null
           positive_responses: number | null
+          power_dials: number | null
           responses: number | null
           revenue: number | null
           sdr_calls_booked: number | null
           sdr_calls_showed: number | null
+          sdr_name: string | null
+          source: string | null
           updated_at: string
         }
         Insert: {
@@ -629,13 +635,19 @@ export type Database = {
           demos_booked?: number | null
           demos_showed?: number | null
           id?: string
+          intro_attempts?: number | null
+          intros_rescheduled?: number | null
           messages_sent?: number | null
+          monday_item_id?: string | null
           notes?: string | null
           positive_responses?: number | null
+          power_dials?: number | null
           responses?: number | null
           revenue?: number | null
           sdr_calls_booked?: number | null
           sdr_calls_showed?: number | null
+          sdr_name?: string | null
+          source?: string | null
           updated_at?: string
         }
         Update: {
@@ -645,13 +657,19 @@ export type Database = {
           demos_booked?: number | null
           demos_showed?: number | null
           id?: string
+          intro_attempts?: number | null
+          intros_rescheduled?: number | null
           messages_sent?: number | null
+          monday_item_id?: string | null
           notes?: string | null
           positive_responses?: number | null
+          power_dials?: number | null
           responses?: number | null
           revenue?: number | null
           sdr_calls_booked?: number | null
           sdr_calls_showed?: number | null
+          sdr_name?: string | null
+          source?: string | null
           updated_at?: string
         }
         Relationships: []
