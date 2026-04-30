@@ -326,6 +326,10 @@ export default function SMSOutreach() {
         </div>
         <div className="flex items-center gap-3">
           <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+          <Button variant="outline" onClick={handleSyncMonday} disabled={syncing}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", syncing && "animate-spin")} />
+            {syncing ? "Syncing..." : "Sync Monday"}
+          </Button>
           <Button onClick={openNew}>
             <Plus className="h-4 w-4 mr-2" /> Add Entry
           </Button>
