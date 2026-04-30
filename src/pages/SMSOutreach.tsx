@@ -403,6 +403,7 @@ export default function SMSOutreach() {
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {m.sdr_name || "—"}
+                      </TableCell>
                       <TableCell className="text-right">{m.messages_sent}</TableCell>
                       <TableCell className="text-right">{m.responses}</TableCell>
                       <TableCell className="text-right">{m.positive_responses}</TableCell>
