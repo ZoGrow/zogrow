@@ -99,6 +99,7 @@ const safePct = (num: number, denom: number) =>
 export default function SMSOutreach() {
   const [metrics, setMetrics] = useState<SMSMetric[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(blankForm());
@@ -106,6 +107,26 @@ export default function SMSOutreach() {
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date()),
   });
+
+  const handleSyncMonday = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-monday-eod", {
+        body: {},
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Sync failed");
+      toast.success(
+        `Synced ${data.synced} entries from Monday (${data.skipped} skipped)`,
+      );
+      fetchMetrics();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Monday sync failed: ${msg}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const fetchMetrics = async () => {
     setLoading(true);
