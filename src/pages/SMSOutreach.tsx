@@ -229,6 +229,7 @@ export default function SMSOutreach() {
       demos_showed: parseInt(form.demos_showed) || 0,
       deals_closed: parseInt(form.deals_closed) || 0,
       revenue: parseFloat(form.revenue) || 0,
+      sms_spend: parseFloat(form.sms_spend) || 0,
       notes: form.notes || null,
     };
 
