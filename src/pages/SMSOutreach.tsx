@@ -46,6 +46,7 @@ import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 interface SMSMetric {
   id: string;
   date: string;
+  sdr_name: string | null;
   messages_sent: number;
   responses: number;
   positive_responses: number;
@@ -55,6 +56,10 @@ interface SMSMetric {
   demos_showed: number;
   deals_closed: number;
   revenue: number;
+  intros_rescheduled: number;
+  intro_attempts: number;
+  power_dials: number;
+  source: string | null;
   notes: string | null;
 }
 
