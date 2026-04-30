@@ -37,6 +37,7 @@ import {
   Trash2,
   Pencil,
   Percent,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
@@ -45,6 +46,7 @@ import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 interface SMSMetric {
   id: string;
   date: string;
+  sdr_name: string | null;
   messages_sent: number;
   responses: number;
   positive_responses: number;
@@ -54,6 +56,10 @@ interface SMSMetric {
   demos_showed: number;
   deals_closed: number;
   revenue: number;
+  intros_rescheduled: number;
+  intro_attempts: number;
+  power_dials: number;
+  source: string | null;
   notes: string | null;
 }
 
@@ -98,6 +104,7 @@ const safePct = (num: number, denom: number) =>
 export default function SMSOutreach() {
   const [metrics, setMetrics] = useState<SMSMetric[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(blankForm());
@@ -105,6 +112,26 @@ export default function SMSOutreach() {
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date()),
   });
+
+  const handleSyncMonday = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-monday-eod", {
+        body: {},
+      });
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Sync failed");
+      toast.success(
+        `Synced ${data.synced} entries from Monday (${data.skipped} skipped)`,
+      );
+      fetchMetrics();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Monday sync failed: ${msg}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const fetchMetrics = async () => {
     setLoading(true);
@@ -304,6 +331,10 @@ export default function SMSOutreach() {
         </div>
         <div className="flex items-center gap-3">
           <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+          <Button variant="outline" onClick={handleSyncMonday} disabled={syncing}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", syncing && "animate-spin")} />
+            {syncing ? "Syncing..." : "Sync Monday"}
+          </Button>
           <Button onClick={openNew}>
             <Plus className="h-4 w-4 mr-2" /> Add Entry
           </Button>
@@ -351,6 +382,7 @@ export default function SMSOutreach() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
+                    <TableHead>SDR</TableHead>
                     <TableHead className="text-right">Sent</TableHead>
                     <TableHead className="text-right">Replies</TableHead>
                     <TableHead className="text-right">Positive</TableHead>
@@ -368,6 +400,9 @@ export default function SMSOutreach() {
                     <TableRow key={m.id}>
                       <TableCell className="font-medium">
                         {format(new Date(m.date + "T00:00:00"), "MMM d, yyyy")}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {m.sdr_name || "—"}
                       </TableCell>
                       <TableCell className="text-right">{m.messages_sent}</TableCell>
                       <TableCell className="text-right">{m.responses}</TableCell>
