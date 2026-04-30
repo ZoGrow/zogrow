@@ -90,6 +90,7 @@ const blankForm = (): FormData => ({
   demos_showed: "",
   deals_closed: "",
   revenue: "",
+  sms_spend: "",
   notes: "",
 });
 
