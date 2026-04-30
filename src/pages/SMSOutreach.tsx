@@ -209,6 +209,7 @@ export default function SMSOutreach() {
       demos_showed: String(m.demos_showed || ""),
       deals_closed: String(m.deals_closed || ""),
       revenue: String(m.revenue || ""),
+      sms_spend: String(m.sms_spend || ""),
       notes: m.notes || "",
     });
     setDialogOpen(true);
