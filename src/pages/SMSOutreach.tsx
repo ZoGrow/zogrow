@@ -433,6 +433,9 @@ export default function SMSOutreach() {
                         ${Number(m.revenue || 0).toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right">
+                        ${Number(m.sms_spend || 0).toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
                             <Pencil className="h-4 w-4" />
