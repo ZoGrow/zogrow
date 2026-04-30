@@ -573,7 +573,7 @@ export default function SMSOutreach() {
                   onChange={(e) => setForm({ ...form, deals_closed: e.target.value })}
                 />
               </div>
-              <div className="col-span-2">
+              <div>
                 <Label>Revenue ($)</Label>
                 <Input
                   type="number"
@@ -581,6 +581,16 @@ export default function SMSOutreach() {
                   step="0.01"
                   value={form.revenue}
                   onChange={(e) => setForm({ ...form, revenue: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>SMS Spend ($)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.sms_spend}
+                  onChange={(e) => setForm({ ...form, sms_spend: e.target.value })}
                 />
               </div>
             </div>
