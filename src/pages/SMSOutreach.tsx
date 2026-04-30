@@ -408,6 +408,7 @@ export default function SMSOutreach() {
                     <TableHead className="text-right">Demo Showed</TableHead>
                     <TableHead className="text-right">Closed</TableHead>
                     <TableHead className="text-right">Revenue</TableHead>
+                    <TableHead className="text-right">SMS Spend</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
