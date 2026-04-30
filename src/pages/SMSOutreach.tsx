@@ -56,6 +56,7 @@ interface SMSMetric {
   demos_showed: number;
   deals_closed: number;
   revenue: number;
+  sms_spend: number;
   intros_rescheduled: number;
   intro_attempts: number;
   power_dials: number;
