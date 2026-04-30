@@ -382,6 +382,7 @@ export default function SMSOutreach() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
+                    <TableHead>SDR</TableHead>
                     <TableHead className="text-right">Sent</TableHead>
                     <TableHead className="text-right">Replies</TableHead>
                     <TableHead className="text-right">Positive</TableHead>
@@ -400,6 +401,8 @@ export default function SMSOutreach() {
                       <TableCell className="font-medium">
                         {format(new Date(m.date + "T00:00:00"), "MMM d, yyyy")}
                       </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {m.sdr_name || "—"}
                       <TableCell className="text-right">{m.messages_sent}</TableCell>
                       <TableCell className="text-right">{m.responses}</TableCell>
                       <TableCell className="text-right">{m.positive_responses}</TableCell>
