@@ -605,6 +605,33 @@ export type Database = {
           },
         ]
       }
+      slack_event_log: {
+        Row: {
+          channel_id: string | null
+          client_id: string | null
+          event_id: string
+          event_type: string | null
+          id: string
+          processed_at: string
+        }
+        Insert: {
+          channel_id?: string | null
+          client_id?: string | null
+          event_id: string
+          event_type?: string | null
+          id?: string
+          processed_at?: string
+        }
+        Update: {
+          channel_id?: string | null
+          client_id?: string | null
+          event_id?: string
+          event_type?: string | null
+          id?: string
+          processed_at?: string
+        }
+        Relationships: []
+      }
       sms_outreach_metrics: {
         Row: {
           created_at: string
