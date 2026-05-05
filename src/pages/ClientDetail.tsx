@@ -249,18 +249,21 @@ export default function ClientDetail() {
       { impressions: 0, clicks: 0, ad_spend: 0, leads: 0, dials_made: 0, pickups: 0, appointments_booked: 0, self_booked: 0, sales_team_booked: 0, live_transfers: 0, appointments_showed: 0, contracts_signed: 0, deals_closed: 0, revenue: 0 }
     );
 
+    const totalBooked = totals.live_transfers + totals.self_booked + totals.sales_team_booked;
+
     return {
       ...totals,
+      appointments_booked: totalBooked,
       ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
       cpl: totals.leads > 0 ? totals.ad_spend / totals.leads : 0,
       cac: totals.deals_closed > 0 ? totals.ad_spend / totals.deals_closed : 0,
       roas: totals.ad_spend > 0 ? totals.revenue / totals.ad_spend : 0,
-      show_up_rate: totals.appointments_booked > 0 ? (totals.appointments_showed / totals.appointments_booked) * 100 : 0,
-      cost_per_appointment_booked: (totals.live_transfers + totals.self_booked + totals.sales_team_booked) > 0 ? totals.ad_spend / (totals.live_transfers + totals.self_booked + totals.sales_team_booked) : 0,
+      show_up_rate: totalBooked > 0 ? (totals.appointments_showed / totalBooked) * 100 : 0,
+      cost_per_appointment_booked: totalBooked > 0 ? totals.ad_spend / totalBooked : 0,
       cost_per_appointment_showed: totals.appointments_showed > 0 ? totals.ad_spend / totals.appointments_showed : 0,
       cost_per_contract: totals.contracts_signed > 0 ? totals.ad_spend / totals.contracts_signed : 0,
       lead_to_live_transfer: totals.leads > 0 ? (totals.live_transfers / totals.leads) * 100 : 0,
-      lead_to_booked: totals.leads > 0 ? (totals.appointments_booked / totals.leads) * 100 : 0,
+      lead_to_booked: totals.leads > 0 ? (totalBooked / totals.leads) * 100 : 0,
       lead_to_self_booked: totals.leads > 0 ? (totals.self_booked / totals.leads) * 100 : 0,
       pickup_rate: totals.dials_made > 0 ? (totals.pickups / totals.dials_made) * 100 : 0,
     };
@@ -272,7 +275,7 @@ export default function ClientDetail() {
         date: m.date,
         ad_spend: m.ad_spend || 0,
         leads: m.leads || 0,
-        appointments_booked: m.appointments_booked || 0,
+        appointments_booked: (m.live_transfers || 0) + (m.self_booked || 0) + (m.sales_team_booked || 0),
         deals_closed: m.deals_closed || 0,
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
