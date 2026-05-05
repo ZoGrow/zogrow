@@ -52,7 +52,7 @@ export function EnhancedKPICard({
   const tooltipInfo = metricKey ? metricTooltips[metricKey] : null;
   
   // Determine if lower is better for this metric
-  const lowerIsBetter = metricKey && ['cpl', 'cost_per_appointment_booked', 'cost_per_appointment_showed', 'cac', 'cpc'].includes(metricKey);
+  const lowerIsBetter = metricKey && ['cpl', 'cost_per_appointment_booked', 'cost_per_appointment_showed', 'cost_per_live_transfer', 'cost_per_self_booked', 'cost_per_sales_team_booked', 'cac', 'cpc'].includes(metricKey);
   
   // For display: flip the meaning of positive/negative for "lower is better" metrics
   const periodIsGood = lowerIsBetter ? vsPreviousPercent < 0 : vsPreviousPercent > 0;
