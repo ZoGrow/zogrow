@@ -16,6 +16,9 @@ interface MetricRecord {
   appointments_showed: number;
   deals_closed: number;
   revenue: number;
+  live_transfers: number;
+  self_booked: number;
+  sales_team_booked: number;
 }
 
 interface CalculatedMetrics {
