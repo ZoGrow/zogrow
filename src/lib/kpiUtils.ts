@@ -117,7 +117,8 @@ export interface FunnelStep {
 }
 
 export const calculateFunnel = (metrics: CalculatedMetrics): FunnelStep[] => {
-  const { impressions, clicks, leads, appointments_booked, appointments_showed, deals_closed, ad_spend } = metrics;
+  const { impressions, clicks, leads, appointments_booked, appointments_showed, deals_closed, ad_spend, live_transfers } = metrics as any;
+  const totalBooked = (appointments_booked || 0) + (live_transfers || 0);
   
   return [
     {
