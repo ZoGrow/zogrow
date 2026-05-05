@@ -531,21 +531,6 @@ export default function ClientDetail() {
           icon={Target}
         />
         <KPICard
-          title="Cost / Live Transfer"
-          value={formatCurrency(metrics.cost_per_live_transfer)}
-          icon={DollarSign}
-        />
-        <KPICard
-          title="Cost / Self-Booked"
-          value={formatCurrency(metrics.cost_per_self_booked)}
-          icon={DollarSign}
-        />
-        <KPICard
-          title="Cost / Sales-Team Booked"
-          value={formatCurrency(metrics.cost_per_sales_team_booked)}
-          icon={DollarSign}
-        />
-        <KPICard
           title="Cost / Contract"
           value={formatCurrency(metrics.cost_per_contract)}
           icon={FileSignature}
