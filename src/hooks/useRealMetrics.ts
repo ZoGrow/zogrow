@@ -129,7 +129,7 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
     ctr: safeDivide(totals.clicks, totals.impressions) * 100,
     cpc: safeDivide(totals.ad_spend, totals.clicks),
     cpl: safeDivide(totals.ad_spend, totals.leads),
-    cost_per_appointment_booked: safeDivide(totals.ad_spend, totals.appointments_booked),
+    cost_per_appointment_booked: safeDivide(totals.ad_spend, (totals.appointments_booked || 0) + (totals.live_transfers || 0)),
     cost_per_appointment_showed: safeDivide(totals.ad_spend, totals.appointments_showed),
     cost_per_live_transfer: safeDivide(totals.ad_spend, totals.live_transfers),
     cost_per_self_booked: safeDivide(totals.ad_spend, totals.self_booked),
