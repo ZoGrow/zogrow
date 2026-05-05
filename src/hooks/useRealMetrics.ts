@@ -124,18 +124,21 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
     }
   );
 
+  const totalBooked = (totals.live_transfers || 0) + (totals.self_booked || 0) + (totals.sales_team_booked || 0);
+
   return {
     ...totals,
+    appointments_booked: totalBooked,
     ctr: safeDivide(totals.clicks, totals.impressions) * 100,
     cpc: safeDivide(totals.ad_spend, totals.clicks),
     cpl: safeDivide(totals.ad_spend, totals.leads),
-    cost_per_appointment_booked: safeDivide(totals.ad_spend, (totals.live_transfers || 0) + (totals.self_booked || 0) + (totals.sales_team_booked || 0)),
+    cost_per_appointment_booked: safeDivide(totals.ad_spend, totalBooked),
     cost_per_appointment_showed: safeDivide(totals.ad_spend, totals.appointments_showed),
     cost_per_live_transfer: safeDivide(totals.ad_spend, totals.live_transfers),
     cost_per_self_booked: safeDivide(totals.ad_spend, totals.self_booked),
     cost_per_sales_team_booked: safeDivide(totals.ad_spend, totals.sales_team_booked),
-    show_up_rate: safeDivide(totals.appointments_showed, totals.appointments_booked) * 100,
-    lead_to_appointment_rate: safeDivide(totals.appointments_booked, totals.leads) * 100,
+    show_up_rate: safeDivide(totals.appointments_showed, totalBooked) * 100,
+    lead_to_appointment_rate: safeDivide(totalBooked, totals.leads) * 100,
     cac: safeDivide(totals.ad_spend, totals.deals_closed),
     close_rate: safeDivide(totals.deals_closed, totals.leads) * 100,
     roas: safeDivide(totals.revenue, totals.ad_spend),
@@ -326,7 +329,7 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       }
       acc[m.date].ad_spend += m.ad_spend;
       acc[m.date].leads += m.leads;
-      acc[m.date].appointments_booked += m.appointments_booked;
+      acc[m.date].appointments_booked += (m.live_transfers || 0) + (m.self_booked || 0) + (m.sales_team_booked || 0);
       acc[m.date].appointments_showed += m.appointments_showed;
       acc[m.date].deals_closed += m.deals_closed;
       acc[m.date].revenue += m.revenue;
