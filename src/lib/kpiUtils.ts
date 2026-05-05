@@ -148,7 +148,7 @@ export const calculateFunnel = (metrics: CalculatedMetrics): FunnelStep[] => {
     {
       name: 'Appts Showed',
       value: appointments_showed,
-      conversionRate: safeDivide(appointments_showed, appointments_booked) * 100,
+      conversionRate: safeDivide(appointments_showed, totalBooked) * 100,
       costAtStage: safeDivide(ad_spend, appointments_showed),
     },
     {
@@ -173,7 +173,9 @@ export const getDataWarnings = (metrics: CalculatedMetrics): DataWarning[] => {
     warnings.push({ type: 'warning', message: 'Revenue missing - ROAS incomplete' });
   }
   
-  if (metrics.appointments_booked > 0 && metrics.appointments_showed === 0) {
+  const totalBooked = ((metrics as any).live_transfers || 0) + ((metrics as any).self_booked || 0) + ((metrics as any).sales_team_booked || 0) || metrics.appointments_booked;
+
+  if (totalBooked > 0 && metrics.appointments_showed === 0) {
     warnings.push({ type: 'warning', message: 'Show data missing - Show-Up Rate incomplete' });
   }
   
@@ -191,7 +193,7 @@ export const metricTooltips: Record<string, { description: string; benchmark: st
     benchmark: 'Industry avg: $30-60 for real estate',
   },
   cost_per_appointment_booked: {
-    description: 'Total ad spend divided by number of appointments booked.',
+    description: 'Total ad spend divided by live transfers, self-booked, and sales-team-booked appointments combined.',
     benchmark: 'Target: $100-200 per booked appointment',
   },
   cost_per_appointment_showed: {
