@@ -75,6 +75,9 @@ interface AverageMetrics {
   avg_cpl: number;
   avg_cost_per_appointment_booked: number;
   avg_cost_per_appointment_showed: number;
+  avg_cost_per_live_transfer: number;
+  avg_cost_per_self_booked: number;
+  avg_cost_per_sales_team_booked: number;
   avg_show_up_rate: number;
   avg_lead_to_appointment_rate: number;
   avg_cac: number;
