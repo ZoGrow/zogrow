@@ -256,7 +256,7 @@ export default function ClientDetail() {
       cac: totals.deals_closed > 0 ? totals.ad_spend / totals.deals_closed : 0,
       roas: totals.ad_spend > 0 ? totals.revenue / totals.ad_spend : 0,
       show_up_rate: totals.appointments_booked > 0 ? (totals.appointments_showed / totals.appointments_booked) * 100 : 0,
-      cost_per_appointment_booked: (totals.appointments_booked + totals.live_transfers) > 0 ? totals.ad_spend / (totals.appointments_booked + totals.live_transfers) : 0,
+      cost_per_appointment_booked: (totals.live_transfers + totals.self_booked + totals.sales_team_booked) > 0 ? totals.ad_spend / (totals.live_transfers + totals.self_booked + totals.sales_team_booked) : 0,
       cost_per_appointment_showed: totals.appointments_showed > 0 ? totals.ad_spend / totals.appointments_showed : 0,
       cost_per_contract: totals.contracts_signed > 0 ? totals.ad_spend / totals.contracts_signed : 0,
       lead_to_live_transfer: totals.leads > 0 ? (totals.live_transfers / totals.leads) * 100 : 0,
