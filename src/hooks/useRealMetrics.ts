@@ -32,11 +32,17 @@ interface CalculatedMetrics {
   appointments_showed: number;
   deals_closed: number;
   revenue: number;
+  live_transfers: number;
+  self_booked: number;
+  sales_team_booked: number;
   ctr: number;
   cpc: number;
   cpl: number;
   cost_per_appointment_booked: number;
   cost_per_appointment_showed: number;
+  cost_per_live_transfer: number;
+  cost_per_self_booked: number;
+  cost_per_sales_team_booked: number;
   show_up_rate: number;
   lead_to_appointment_rate: number;
   cac: number;
