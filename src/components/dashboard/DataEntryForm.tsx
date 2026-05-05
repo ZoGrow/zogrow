@@ -116,7 +116,8 @@ export function DataEntryForm({ clientId, clientName, onMetricsSaved }: DataEntr
 
     const selfBooked = parseInt(formData.self_booked) || 0;
     const salesTeamBooked = parseInt(formData.sales_team_booked) || 0;
-    const totalBooked = selfBooked + salesTeamBooked;
+    const liveTransfers = parseInt(formData.live_transfers) || 0;
+    const totalBooked = liveTransfers + selfBooked + salesTeamBooked;
 
     const { error, data } = await supabase.from("metrics").insert({
       client_id: clientId,
@@ -130,7 +131,7 @@ export function DataEntryForm({ clientId, clientName, onMetricsSaved }: DataEntr
       appointments_booked: totalBooked,
       self_booked: selfBooked,
       sales_team_booked: salesTeamBooked,
-      live_transfers: parseInt(formData.live_transfers) || 0,
+      live_transfers: liveTransfers,
       setter: formData.setter || null,
       appointments_showed: parseInt(formData.appointments_showed) || 0,
       contracts_signed: parseInt(formData.contracts_signed) || 0,

@@ -136,6 +136,7 @@ export function MetricsHistoryTable({ metricsData, onMetricsUpdated }: MetricsHi
 
     const selfBooked = editData.self_booked || 0;
     const salesTeamBooked = editData.sales_team_booked || 0;
+    const liveTransfers = editData.live_transfers || 0;
 
     const { error } = await supabase
       .from("metrics")
@@ -146,10 +147,10 @@ export function MetricsHistoryTable({ metricsData, onMetricsUpdated }: MetricsHi
         leads: editData.leads || 0,
         dials_made: editData.dials_made || 0,
         pickups: editData.pickups || 0,
-        appointments_booked: selfBooked + salesTeamBooked,
+        appointments_booked: liveTransfers + selfBooked + salesTeamBooked,
         self_booked: selfBooked,
         sales_team_booked: salesTeamBooked,
-        live_transfers: editData.live_transfers || 0,
+        live_transfers: liveTransfers,
         appointments_showed: editData.appointments_showed || 0,
         contracts_signed: editData.contracts_signed || 0,
         deals_closed: editData.deals_closed || 0,
@@ -232,17 +233,19 @@ export function MetricsHistoryTable({ metricsData, onMetricsUpdated }: MetricsHi
 
       const selfBooked = edit.self_booked ?? (row.self_booked || 0);
       const salesTeamBooked = edit.sales_team_booked ?? (row.sales_team_booked || 0);
+      const liveTransfers = edit.live_transfers ?? (row.live_transfers || 0);
 
       const updateData: Record<string, number> = {
         self_booked: selfBooked,
         sales_team_booked: salesTeamBooked,
-        appointments_booked: selfBooked + salesTeamBooked,
+        live_transfers: liveTransfers,
+        appointments_booked: liveTransfers + selfBooked + salesTeamBooked,
       };
 
       // Include all changed fields
       const fields: BulkEditField[] = [
         "ad_spend", "impressions", "clicks", "leads", "dials_made", "pickups",
-        "live_transfers", "appointments_showed", "contracts_signed", "deals_closed", "revenue"
+        "appointments_showed", "contracts_signed", "deals_closed", "revenue"
       ];
       for (const f of fields) {
         if (edit[f] !== undefined) {
