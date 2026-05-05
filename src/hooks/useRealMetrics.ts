@@ -16,6 +16,9 @@ interface MetricRecord {
   appointments_showed: number;
   deals_closed: number;
   revenue: number;
+  live_transfers: number;
+  self_booked: number;
+  sales_team_booked: number;
 }
 
 interface CalculatedMetrics {
@@ -29,11 +32,17 @@ interface CalculatedMetrics {
   appointments_showed: number;
   deals_closed: number;
   revenue: number;
+  live_transfers: number;
+  self_booked: number;
+  sales_team_booked: number;
   ctr: number;
   cpc: number;
   cpl: number;
   cost_per_appointment_booked: number;
   cost_per_appointment_showed: number;
+  cost_per_live_transfer: number;
+  cost_per_self_booked: number;
+  cost_per_sales_team_booked: number;
   show_up_rate: number;
   lead_to_appointment_rate: number;
   cac: number;
@@ -66,6 +75,9 @@ interface AverageMetrics {
   avg_cpl: number;
   avg_cost_per_appointment_booked: number;
   avg_cost_per_appointment_showed: number;
+  avg_cost_per_live_transfer: number;
+  avg_cost_per_self_booked: number;
+  avg_cost_per_sales_team_booked: number;
   avg_show_up_rate: number;
   avg_lead_to_appointment_rate: number;
   avg_cac: number;
@@ -91,6 +103,9 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
       appointments_showed: acc.appointments_showed + (m.appointments_showed || 0),
       deals_closed: acc.deals_closed + (m.deals_closed || 0),
       revenue: acc.revenue + (m.revenue || 0),
+      live_transfers: acc.live_transfers + (m.live_transfers || 0),
+      self_booked: acc.self_booked + (m.self_booked || 0),
+      sales_team_booked: acc.sales_team_booked + (m.sales_team_booked || 0),
     }),
     {
       impressions: 0,
@@ -103,6 +118,9 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
       appointments_showed: 0,
       deals_closed: 0,
       revenue: 0,
+      live_transfers: 0,
+      self_booked: 0,
+      sales_team_booked: 0,
     }
   );
 
@@ -113,6 +131,9 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
     cpl: safeDivide(totals.ad_spend, totals.leads),
     cost_per_appointment_booked: safeDivide(totals.ad_spend, totals.appointments_booked),
     cost_per_appointment_showed: safeDivide(totals.ad_spend, totals.appointments_showed),
+    cost_per_live_transfer: safeDivide(totals.ad_spend, totals.live_transfers),
+    cost_per_self_booked: safeDivide(totals.ad_spend, totals.self_booked),
+    cost_per_sales_team_booked: safeDivide(totals.ad_spend, totals.sales_team_booked),
     show_up_rate: safeDivide(totals.appointments_showed, totals.appointments_booked) * 100,
     lead_to_appointment_rate: safeDivide(totals.appointments_booked, totals.leads) * 100,
     cac: safeDivide(totals.ad_spend, totals.deals_closed),
@@ -145,6 +166,9 @@ const normalizeMetric = (m: any): MetricRecord => ({
   appointments_showed: m.appointments_showed || 0,
   deals_closed: m.deals_closed || 0,
   revenue: Number(m.revenue) || 0,
+  live_transfers: m.live_transfers || 0,
+  self_booked: m.self_booked || 0,
+  sales_team_booked: m.sales_team_booked || 0,
 });
 
 const toDateStr = (d: Date) => {
@@ -249,7 +273,8 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       avg_impressions: 0, avg_clicks: 0, avg_spend: 0, avg_leads: 0, avg_dials_made: 0,
       avg_pickups: 0, avg_appointments_booked: 0, avg_appointments_showed: 0, avg_deals_closed: 0,
       avg_revenue: 0, avg_ctr: 0, avg_cpc: 0, avg_cpl: 0, avg_cost_per_appointment_booked: 0,
-      avg_cost_per_appointment_showed: 0, avg_show_up_rate: 0, avg_lead_to_appointment_rate: 0,
+      avg_cost_per_appointment_showed: 0, avg_cost_per_live_transfer: 0, avg_cost_per_self_booked: 0,
+      avg_cost_per_sales_team_booked: 0, avg_show_up_rate: 0, avg_lead_to_appointment_rate: 0,
       avg_cac: 0, avg_roas: 0, avg_close_rate: 0, client_count: 0,
     };
     if (count === 0) return empty;
@@ -274,6 +299,9 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       avg_cpl: totals.cpl,
       avg_cost_per_appointment_booked: totals.cost_per_appointment_booked,
       avg_cost_per_appointment_showed: totals.cost_per_appointment_showed,
+      avg_cost_per_live_transfer: totals.cost_per_live_transfer,
+      avg_cost_per_self_booked: totals.cost_per_self_booked,
+      avg_cost_per_sales_team_booked: totals.cost_per_sales_team_booked,
       avg_show_up_rate: totals.show_up_rate,
       avg_lead_to_appointment_rate: totals.lead_to_appointment_rate,
       avg_cac: totals.cac,

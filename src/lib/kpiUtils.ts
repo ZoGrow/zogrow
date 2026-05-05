@@ -20,7 +20,7 @@ export interface AgencyBenchmarks {
 
 // Determine if a metric is "lower is better" or "higher is better"
 export const isLowerBetter = (metricKey: string): boolean => {
-  const lowerBetterMetrics = ['cpl', 'cost_per_appointment_booked', 'cost_per_appointment_showed', 'cac', 'cpc'];
+  const lowerBetterMetrics = ['cpl', 'cost_per_appointment_booked', 'cost_per_appointment_showed', 'cost_per_live_transfer', 'cost_per_self_booked', 'cost_per_sales_team_booked', 'cac', 'cpc'];
   return lowerBetterMetrics.includes(metricKey);
 };
 

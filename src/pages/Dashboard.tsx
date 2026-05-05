@@ -207,6 +207,33 @@ export default function Dashboard() {
           icon={Target}
         />
         <EnhancedKPICard
+          title="Cost / Live Transfer"
+          value={formatCurrency(metrics.cost_per_live_transfer)}
+          rawValue={metrics.cost_per_live_transfer}
+          previousValue={previousMetrics?.cost_per_live_transfer}
+          agencyAvg={avgMetrics.avg_cost_per_live_transfer}
+          metricKey="cost_per_live_transfer"
+          icon={DollarSign}
+        />
+        <EnhancedKPICard
+          title="Cost / Self-Booked"
+          value={formatCurrency(metrics.cost_per_self_booked)}
+          rawValue={metrics.cost_per_self_booked}
+          previousValue={previousMetrics?.cost_per_self_booked}
+          agencyAvg={avgMetrics.avg_cost_per_self_booked}
+          metricKey="cost_per_self_booked"
+          icon={DollarSign}
+        />
+        <EnhancedKPICard
+          title="Cost / Sales-Team Booked"
+          value={formatCurrency(metrics.cost_per_sales_team_booked)}
+          rawValue={metrics.cost_per_sales_team_booked}
+          previousValue={previousMetrics?.cost_per_sales_team_booked}
+          agencyAvg={avgMetrics.avg_cost_per_sales_team_booked}
+          metricKey="cost_per_sales_team_booked"
+          icon={DollarSign}
+        />
+        <EnhancedKPICard
           title="CAC (Cost / Deal)"
           value={formatCurrency(metrics.cac)}
           rawValue={metrics.cac}
