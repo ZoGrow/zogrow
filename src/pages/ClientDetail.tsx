@@ -516,7 +516,7 @@ export default function ClientDetail() {
       </div>
 
       {/* Cost Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPICard
           title="CPL"
           value={formatCurrency(metrics.cpl)}
@@ -532,6 +532,21 @@ export default function ClientDetail() {
           title="Cost / Appt Showed"
           value={formatCurrency(metrics.cost_per_appointment_showed)}
           icon={Target}
+        />
+        <KPICard
+          title="Cost / Live Transfer"
+          value={formatCurrency(metrics.cost_per_live_transfer)}
+          icon={DollarSign}
+        />
+        <KPICard
+          title="Cost / Self-Booked"
+          value={formatCurrency(metrics.cost_per_self_booked)}
+          icon={DollarSign}
+        />
+        <KPICard
+          title="Cost / Sales-Team Booked"
+          value={formatCurrency(metrics.cost_per_sales_team_booked)}
+          icon={DollarSign}
         />
         <KPICard
           title="Cost / Contract"
