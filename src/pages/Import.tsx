@@ -12,6 +12,9 @@ interface PreviewRow {
   ad_spend: number;
   leads: number;
   appointments_booked: number;
+  live_transfers: number;
+  self_booked: number;
+  sales_team_booked: number;
   appointments_showed: number;
   deals_closed: number;
   revenue: number;
@@ -94,6 +97,12 @@ export default function Import() {
         const values = lines[i].split(",").map((v) => v.trim());
         
         try {
+          const liveTransfers = parseInt(values[headers.indexOf("live_transfers")] || "0") || 0;
+          const selfBooked = parseInt(values[headers.indexOf("self_booked")] || "0") || 0;
+          const salesTeamBooked = parseInt(values[headers.indexOf("sales_team_booked")] || "0") || 0;
+          const legacyBooked = parseInt(values[headers.indexOf("appointments_booked")] || "0") || 0;
+          const combinedBooked = liveTransfers + selfBooked + salesTeamBooked;
+
           data.push({
             date: values[headers.indexOf("date")] || "",
             client: values[headers.indexOf("client")] || "",
@@ -101,7 +110,10 @@ export default function Import() {
             clicks: parseInt(values[headers.indexOf("clicks")]) || 0,
             ad_spend: parseFloat(values[headers.indexOf("ad_spend")]) || 0,
             leads: parseInt(values[headers.indexOf("leads")]) || 0,
-            appointments_booked: parseInt(values[headers.indexOf("appointments_booked")]) || 0,
+            appointments_booked: combinedBooked || legacyBooked,
+            live_transfers: liveTransfers,
+            self_booked: selfBooked || (combinedBooked === 0 ? legacyBooked : 0),
+            sales_team_booked: salesTeamBooked,
             appointments_showed: parseInt(values[headers.indexOf("appointments_showed")] || "0") || 0,
             deals_closed: parseInt(values[headers.indexOf("deals_closed")] || "0") || 0,
             revenue: parseFloat(values[headers.indexOf("revenue")] || "0") || 0,
