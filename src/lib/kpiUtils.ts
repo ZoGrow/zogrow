@@ -141,9 +141,9 @@ export const calculateFunnel = (metrics: CalculatedMetrics): FunnelStep[] => {
     },
     {
       name: 'Appts Booked',
-      value: appointments_booked,
-      conversionRate: safeDivide(appointments_booked, leads) * 100,
-      costAtStage: safeDivide(ad_spend, appointments_booked),
+      value: totalBooked,
+      conversionRate: safeDivide(totalBooked, leads) * 100,
+      costAtStage: safeDivide(ad_spend, totalBooked),
     },
     {
       name: 'Appts Showed',
