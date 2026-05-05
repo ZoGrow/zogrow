@@ -273,7 +273,8 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       avg_impressions: 0, avg_clicks: 0, avg_spend: 0, avg_leads: 0, avg_dials_made: 0,
       avg_pickups: 0, avg_appointments_booked: 0, avg_appointments_showed: 0, avg_deals_closed: 0,
       avg_revenue: 0, avg_ctr: 0, avg_cpc: 0, avg_cpl: 0, avg_cost_per_appointment_booked: 0,
-      avg_cost_per_appointment_showed: 0, avg_show_up_rate: 0, avg_lead_to_appointment_rate: 0,
+      avg_cost_per_appointment_showed: 0, avg_cost_per_live_transfer: 0, avg_cost_per_self_booked: 0,
+      avg_cost_per_sales_team_booked: 0, avg_show_up_rate: 0, avg_lead_to_appointment_rate: 0,
       avg_cac: 0, avg_roas: 0, avg_close_rate: 0, client_count: 0,
     };
     if (count === 0) return empty;
