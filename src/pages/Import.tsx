@@ -168,6 +168,9 @@ export default function Import() {
         dials_made: number;
         pickups: number;
         appointments_booked: number;
+        live_transfers: number;
+        self_booked: number;
+        sales_team_booked: number;
         appointments_showed: number;
         deals_closed: number;
         revenue: number;
@@ -186,6 +189,12 @@ export default function Import() {
           continue;
         }
 
+        const liveTransfers = parseInt(values[headers.indexOf("live_transfers")] || "0") || 0;
+        const selfBooked = parseInt(values[headers.indexOf("self_booked")] || "0") || 0;
+        const salesTeamBooked = parseInt(values[headers.indexOf("sales_team_booked")] || "0") || 0;
+        const legacyBooked = parseInt(values[headers.indexOf("appointments_booked")] || "0") || 0;
+        const combinedBooked = liveTransfers + selfBooked + salesTeamBooked;
+
         metricsToInsert.push({
           client_id: clientId,
           date: values[headers.indexOf("date")] || new Date().toISOString().split("T")[0],
@@ -195,7 +204,10 @@ export default function Import() {
           leads: parseInt(values[headers.indexOf("leads")]) || 0,
           dials_made: parseInt(values[headers.indexOf("dials_made")] || "0") || 0,
           pickups: parseInt(values[headers.indexOf("pickups")] || "0") || 0,
-          appointments_booked: parseInt(values[headers.indexOf("appointments_booked")]) || 0,
+          appointments_booked: combinedBooked || legacyBooked,
+          live_transfers: liveTransfers,
+          self_booked: selfBooked || (combinedBooked === 0 ? legacyBooked : 0),
+          sales_team_booked: salesTeamBooked,
           appointments_showed: parseInt(values[headers.indexOf("appointments_showed")] || "0") || 0,
           deals_closed: parseInt(values[headers.indexOf("deals_closed")] || "0") || 0,
           revenue: parseFloat(values[headers.indexOf("revenue")] || "0") || 0,
