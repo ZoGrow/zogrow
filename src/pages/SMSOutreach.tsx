@@ -191,8 +191,6 @@ export default function SMSOutreach() {
     setForm({
       date: new Date(y, mo - 1, d),
       messages_sent: String(m.messages_sent || ""),
-      responses: String(m.responses || ""),
-      positive_responses: String(m.positive_responses || ""),
       sdr_calls_booked: String(m.sdr_calls_booked || ""),
       sdr_calls_showed: String(m.sdr_calls_showed || ""),
       demos_booked: String(m.demos_booked || ""),
@@ -209,8 +207,6 @@ export default function SMSOutreach() {
     const payload = {
       date: toLocalDateString(form.date),
       messages_sent: parseInt(form.messages_sent) || 0,
-      responses: parseInt(form.responses) || 0,
-      positive_responses: parseInt(form.positive_responses) || 0,
       sdr_calls_booked: parseInt(form.sdr_calls_booked) || 0,
       sdr_calls_showed: parseInt(form.sdr_calls_showed) || 0,
       demos_booked: parseInt(form.demos_booked) || 0,
