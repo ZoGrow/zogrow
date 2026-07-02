@@ -273,21 +273,9 @@ export default function SMSOutreach() {
       icon: MessageSquare,
     },
     {
-      label: "Responses",
-      value: totals.responses.toLocaleString(),
-      sub: `${safePct(totals.responses, totals.messages_sent).toFixed(1)}% reply rate`,
-      icon: Reply,
-    },
-    {
-      label: "Positive Replies",
-      value: totals.positive_responses.toLocaleString(),
-      sub: `${safePct(totals.positive_responses, totals.responses).toFixed(1)}% of replies`,
-      icon: ThumbsUp,
-    },
-    {
       label: "SDR Calls Booked",
       value: totals.sdr_calls_booked.toLocaleString(),
-      sub: `${safePct(totals.sdr_calls_booked, totals.positive_responses).toFixed(1)}% from positives`,
+      sub: `${safePct(totals.sdr_calls_booked, totals.messages_sent).toFixed(1)}% from messages`,
       icon: PhoneCall,
     },
     {
