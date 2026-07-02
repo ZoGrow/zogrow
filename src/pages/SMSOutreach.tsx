@@ -27,8 +27,6 @@ import {
   CalendarIcon,
   Plus,
   MessageSquare,
-  Reply,
-  ThumbsUp,
   PhoneCall,
   Eye,
   Video,
@@ -48,8 +46,6 @@ interface SMSMetric {
   date: string;
   sdr_name: string | null;
   messages_sent: number;
-  responses: number;
-  positive_responses: number;
   sdr_calls_booked: number;
   sdr_calls_showed: number;
   demos_booked: number;
@@ -67,8 +63,6 @@ interface SMSMetric {
 interface FormData {
   date: Date;
   messages_sent: string;
-  responses: string;
-  positive_responses: string;
   sdr_calls_booked: string;
   sdr_calls_showed: string;
   demos_booked: string;
@@ -82,8 +76,6 @@ interface FormData {
 const blankForm = (): FormData => ({
   date: new Date(),
   messages_sent: "",
-  responses: "",
-  positive_responses: "",
   sdr_calls_booked: "",
   sdr_calls_showed: "",
   demos_booked: "",
@@ -166,8 +158,6 @@ export default function SMSOutreach() {
     return metrics.reduce(
       (acc, m) => ({
         messages_sent: acc.messages_sent + (m.messages_sent || 0),
-        responses: acc.responses + (m.responses || 0),
-        positive_responses: acc.positive_responses + (m.positive_responses || 0),
         sdr_calls_booked: acc.sdr_calls_booked + (m.sdr_calls_booked || 0),
         sdr_calls_showed: acc.sdr_calls_showed + (m.sdr_calls_showed || 0),
         demos_booked: acc.demos_booked + (m.demos_booked || 0),
@@ -178,8 +168,6 @@ export default function SMSOutreach() {
       }),
       {
         messages_sent: 0,
-        responses: 0,
-        positive_responses: 0,
         sdr_calls_booked: 0,
         sdr_calls_showed: 0,
         demos_booked: 0,
@@ -203,8 +191,6 @@ export default function SMSOutreach() {
     setForm({
       date: new Date(y, mo - 1, d),
       messages_sent: String(m.messages_sent || ""),
-      responses: String(m.responses || ""),
-      positive_responses: String(m.positive_responses || ""),
       sdr_calls_booked: String(m.sdr_calls_booked || ""),
       sdr_calls_showed: String(m.sdr_calls_showed || ""),
       demos_booked: String(m.demos_booked || ""),
@@ -221,8 +207,6 @@ export default function SMSOutreach() {
     const payload = {
       date: toLocalDateString(form.date),
       messages_sent: parseInt(form.messages_sent) || 0,
-      responses: parseInt(form.responses) || 0,
-      positive_responses: parseInt(form.positive_responses) || 0,
       sdr_calls_booked: parseInt(form.sdr_calls_booked) || 0,
       sdr_calls_showed: parseInt(form.sdr_calls_showed) || 0,
       demos_booked: parseInt(form.demos_booked) || 0,
@@ -275,21 +259,9 @@ export default function SMSOutreach() {
       icon: MessageSquare,
     },
     {
-      label: "Responses",
-      value: totals.responses.toLocaleString(),
-      sub: `${safePct(totals.responses, totals.messages_sent).toFixed(1)}% reply rate`,
-      icon: Reply,
-    },
-    {
-      label: "Positive Replies",
-      value: totals.positive_responses.toLocaleString(),
-      sub: `${safePct(totals.positive_responses, totals.responses).toFixed(1)}% of replies`,
-      icon: ThumbsUp,
-    },
-    {
       label: "SDR Calls Booked",
       value: totals.sdr_calls_booked.toLocaleString(),
-      sub: `${safePct(totals.sdr_calls_booked, totals.positive_responses).toFixed(1)}% from positives`,
+      sub: `${safePct(totals.sdr_calls_booked, totals.messages_sent).toFixed(1)}% from messages`,
       icon: PhoneCall,
     },
     {
@@ -400,8 +372,6 @@ export default function SMSOutreach() {
                     <TableHead>Date</TableHead>
                     <TableHead>SDR</TableHead>
                     <TableHead className="text-right">Sent</TableHead>
-                    <TableHead className="text-right">Replies</TableHead>
-                    <TableHead className="text-right">Positive</TableHead>
                     <TableHead className="text-right">SDR Booked</TableHead>
                     <TableHead className="text-right">SDR Showed</TableHead>
                     <TableHead className="text-right">Demo Booked</TableHead>
@@ -422,8 +392,6 @@ export default function SMSOutreach() {
                         {m.sdr_name || "—"}
                       </TableCell>
                       <TableCell className="text-right">{m.messages_sent}</TableCell>
-                      <TableCell className="text-right">{m.responses}</TableCell>
-                      <TableCell className="text-right">{m.positive_responses}</TableCell>
                       <TableCell className="text-right">{m.sdr_calls_booked}</TableCell>
                       <TableCell className="text-right">{m.sdr_calls_showed}</TableCell>
                       <TableCell className="text-right">{m.demos_booked}</TableCell>
@@ -502,26 +470,6 @@ export default function SMSOutreach() {
                   min="0"
                   value={form.messages_sent}
                   onChange={(e) => setForm({ ...form, messages_sent: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>Responses</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.responses}
-                  onChange={(e) => setForm({ ...form, responses: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>Positive Responses</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.positive_responses}
-                  onChange={(e) =>
-                    setForm({ ...form, positive_responses: e.target.value })
-                  }
                 />
               </div>
               <div>
