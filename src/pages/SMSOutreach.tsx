@@ -372,8 +372,6 @@ export default function SMSOutreach() {
                     <TableHead>Date</TableHead>
                     <TableHead>SDR</TableHead>
                     <TableHead className="text-right">Sent</TableHead>
-                    <TableHead className="text-right">Replies</TableHead>
-                    <TableHead className="text-right">Positive</TableHead>
                     <TableHead className="text-right">SDR Booked</TableHead>
                     <TableHead className="text-right">SDR Showed</TableHead>
                     <TableHead className="text-right">Demo Booked</TableHead>
@@ -394,8 +392,6 @@ export default function SMSOutreach() {
                         {m.sdr_name || "—"}
                       </TableCell>
                       <TableCell className="text-right">{m.messages_sent}</TableCell>
-                      <TableCell className="text-right">{m.responses}</TableCell>
-                      <TableCell className="text-right">{m.positive_responses}</TableCell>
                       <TableCell className="text-right">{m.sdr_calls_booked}</TableCell>
                       <TableCell className="text-right">{m.sdr_calls_showed}</TableCell>
                       <TableCell className="text-right">{m.demos_booked}</TableCell>
