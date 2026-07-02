@@ -158,8 +158,6 @@ export default function SMSOutreach() {
     return metrics.reduce(
       (acc, m) => ({
         messages_sent: acc.messages_sent + (m.messages_sent || 0),
-        responses: acc.responses + (m.responses || 0),
-        positive_responses: acc.positive_responses + (m.positive_responses || 0),
         sdr_calls_booked: acc.sdr_calls_booked + (m.sdr_calls_booked || 0),
         sdr_calls_showed: acc.sdr_calls_showed + (m.sdr_calls_showed || 0),
         demos_booked: acc.demos_booked + (m.demos_booked || 0),
@@ -170,8 +168,6 @@ export default function SMSOutreach() {
       }),
       {
         messages_sent: 0,
-        responses: 0,
-        positive_responses: 0,
         sdr_calls_booked: 0,
         sdr_calls_showed: 0,
         demos_booked: 0,
