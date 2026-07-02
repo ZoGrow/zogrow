@@ -27,8 +27,6 @@ import {
   CalendarIcon,
   Plus,
   MessageSquare,
-  Reply,
-  ThumbsUp,
   PhoneCall,
   Eye,
   Video,
