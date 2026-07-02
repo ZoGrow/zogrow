@@ -473,26 +473,6 @@ export default function SMSOutreach() {
                 />
               </div>
               <div>
-                <Label>Responses</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.responses}
-                  onChange={(e) => setForm({ ...form, responses: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>Positive Responses</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.positive_responses}
-                  onChange={(e) =>
-                    setForm({ ...form, positive_responses: e.target.value })
-                  }
-                />
-              </div>
-              <div>
                 <Label>SDR Calls Booked</Label>
                 <Input
                   type="number"
