@@ -46,8 +46,6 @@ interface SMSMetric {
   date: string;
   sdr_name: string | null;
   messages_sent: number;
-  responses: number;
-  positive_responses: number;
   sdr_calls_booked: number;
   sdr_calls_showed: number;
   demos_booked: number;
