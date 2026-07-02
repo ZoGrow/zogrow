@@ -63,8 +63,6 @@ interface SMSMetric {
 interface FormData {
   date: Date;
   messages_sent: string;
-  responses: string;
-  positive_responses: string;
   sdr_calls_booked: string;
   sdr_calls_showed: string;
   demos_booked: string;
@@ -78,8 +76,6 @@ interface FormData {
 const blankForm = (): FormData => ({
   date: new Date(),
   messages_sent: "",
-  responses: "",
-  positive_responses: "",
   sdr_calls_booked: "",
   sdr_calls_showed: "",
   demos_booked: "",
