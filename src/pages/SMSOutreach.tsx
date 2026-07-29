@@ -306,7 +306,28 @@ export default function SMSOutreach() {
           : undefined,
       icon: DollarSign,
     },
+    {
+      label: "Cost per Intro",
+      value:
+        totals.sdr_calls_booked > 0
+          ? `$${(totals.sms_spend / totals.sdr_calls_booked).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+          : "$0",
+      sub: `${totals.sdr_calls_booked.toLocaleString()} intros booked`,
+      icon: DollarSign,
+    },
+    {
+      label: "Cost per Demo",
+      value:
+        totals.demos_booked > 0
+          ? `$${(totals.sms_spend / totals.demos_booked).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+          : "$0",
+      sub: `${totals.demos_booked.toLocaleString()} demos booked`,
+      icon: DollarSign,
+    },
   ];
+
+
+
 
   return (
     <div className="space-y-6 p-6">
