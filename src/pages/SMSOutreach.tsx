@@ -324,6 +324,9 @@ export default function SMSOutreach() {
       sub: `${totals.demos_booked.toLocaleString()} demos booked`,
       icon: DollarSign,
     },
+  ];
+
+
 
 
   return (
