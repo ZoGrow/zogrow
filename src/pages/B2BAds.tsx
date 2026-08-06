@@ -402,7 +402,7 @@ export default function B2BAds() {
           variant="purple"
         />
         <KPICard
-          title="Total Leads"
+          title="Appointments Booked"
           value={formatNumber(totals.leads)}
           icon={Users}
           variant="purple"
@@ -641,7 +641,7 @@ export default function B2BAds() {
 
               {/* Lead & Appointment Metrics */}
               <div className="space-y-2">
-                <Label>Leads</Label>
+                <Label>Appointments Booked</Label>
                 <Input
                   type="number"
                   min="0"
@@ -799,7 +799,7 @@ export default function B2BAds() {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Spend</TableHead>
-                    <TableHead className="text-right">Leads</TableHead>
+                    <TableHead className="text-right">Appts Bkd</TableHead>
                     <TableHead className="text-right">Intro Bkd</TableHead>
                     <TableHead className="text-right">Intro Shw</TableHead>
                     <TableHead className="text-right">Demo Bkd</TableHead>
