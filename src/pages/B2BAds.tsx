@@ -495,7 +495,7 @@ export default function B2BAds() {
           icon={BarChart3}
         />
         <KPICard
-          title="Lead → Intro Rate"
+          title="Appt → Intro Rate"
           value={`${kpis.leadToIntroRate.toFixed(1)}%`}
           icon={Percent}
         />
@@ -523,7 +523,7 @@ export default function B2BAds() {
         <KPICard
           title="CPL"
           value={formatCurrency(kpis.cpl)}
-          subtitle="Cost per Lead"
+          subtitle="Cost per Appointment"
           icon={DollarSign}
         />
         <KPICard
@@ -639,7 +639,7 @@ export default function B2BAds() {
                 />
               </div>
 
-              {/* Lead & Appointment Metrics */}
+              {/* Appointment Metrics */}
               <div className="space-y-2">
                 <Label>Appointments Booked</Label>
                 <Input
