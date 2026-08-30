@@ -239,6 +239,47 @@ export type Database = {
           },
         ]
       }
+      client_integrations: {
+        Row: {
+          client_id: string
+          created_at: string
+          ghl_api_key: string | null
+          ghl_location_id: string | null
+          ghl_pipeline_id: string | null
+          ghl_pipeline_name: string | null
+          last_synced_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          ghl_api_key?: string | null
+          ghl_location_id?: string | null
+          ghl_pipeline_id?: string | null
+          ghl_pipeline_name?: string | null
+          last_synced_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          ghl_api_key?: string | null
+          ghl_location_id?: string | null
+          ghl_pipeline_id?: string | null
+          ghl_pipeline_name?: string | null
+          last_synced_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_integrations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           client_name: string
