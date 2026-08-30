@@ -125,6 +125,7 @@ export default function ClientDetail() {
   const [metaAdAccountId, setMetaAdAccountId] = useState<string>("");
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSavingMeta, setIsSavingMeta] = useState(false);
+  const [isSyncingGhl, setIsSyncingGhl] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date(),
