@@ -437,7 +437,7 @@ export default function ClientDetail() {
           variant="primary"
         />
         <KPICard
-          title="Total Booked"
+          title="Total LT/APPT"
           value={formatNumber(metrics.appointments_booked)}
           subtitle={`${metrics.lead_to_booked.toFixed(1)}% of leads`}
           icon={Calendar}
