@@ -167,6 +167,27 @@ Deno.serve(async (req) => {
       body.endDate
     );
 
+    if (action === "debug") {
+      const counts: Record<string, number> = {};
+      for (const o of opps) {
+        const n = stageMap.get(o.pipelineStageId) || "UNKNOWN";
+        counts[n] = (counts[n] || 0) + 1;
+      }
+      const sold = opps
+        .filter((o) => (stageMap.get(o.pipelineStageId) || "").toLowerCase() === "sold")
+        .map((o) => ({
+          name: o.name,
+          value: o.monetaryValue,
+          changed: (o.lastStageChangeAt || "").slice(0, 10),
+          created: (o.createdAt || "").slice(0, 10),
+        }));
+      return new Response(JSON.stringify({ total: opps.length, counts, sold }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     // Stage progression: an opportunity that moved past BOOKED CALL still counts
     // as an appointment booked. Counting only the CURRENT stage under-reported
     // every metric, which is why the dashboard numbers looked wrong.
