@@ -55,6 +55,7 @@ function CopyButton({ value }: { value: string }) {
 export default function Integrations() {
   const [syncingMeta, setSyncingMeta] = useState(false);
   const [syncingB2B, setSyncingB2B] = useState(false);
+  const [syncingGHL, setSyncingGHL] = useState(false);
   const [days, setDays] = useState(30);
   const [b2bAdAccountId, setB2bAdAccountId] = useState("");
   const [savingB2bId, setSavingB2bId] = useState(false);
