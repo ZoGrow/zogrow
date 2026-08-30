@@ -337,7 +337,7 @@ export function MetricsHistoryTable({ metricsData, onMetricsUpdated }: MetricsHi
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Pickups</TableHead>
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Self Booked</TableHead>
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Team Booked</TableHead>
-              <TableHead className="text-muted-foreground font-medium whitespace-nowrap">Total Booked</TableHead>
+              <TableHead className="text-muted-foreground font-medium whitespace-nowrap">Total LT/APPT</TableHead>
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Live Transfers</TableHead>
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Appts Showed</TableHead>
               <TableHead className={`font-medium whitespace-nowrap ${bulkMode ? "text-primary" : "text-muted-foreground"}`}>Contracts</TableHead>
