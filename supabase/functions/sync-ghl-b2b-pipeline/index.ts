@@ -93,18 +93,9 @@ async function fetchAllOpportunities(
     startAfter = meta.startAfter;
     if (all.length > 5000) break; // safety
   }
-  // Filter by last stage change date if range provided
-  if (startDate || endDate) {
-    return all.filter((o) => {
-      const d = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
-      if (!d) return false;
-      if (startDate && d < startDate) return false;
-      if (endDate && d > endDate) return false;
-      return true;
-    });
-  }
   return all;
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -143,12 +134,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (action !== "sync") {
+    if (action !== "sync" && action !== "debug") {
       return new Response(JSON.stringify({ error: "Unknown action" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     // Find the "Meta Ads" pipeline (or a pipelineId passed explicitly)
     let pipeline = body.pipelineId
@@ -175,34 +167,86 @@ Deno.serve(async (req) => {
       body.endDate
     );
 
-    // Aggregate per date (by last stage change date)
+    if (action === "debug") {
+      const counts: Record<string, number> = {};
+      for (const o of opps) {
+        const n = stageMap.get(o.pipelineStageId) || "UNKNOWN";
+        counts[n] = (counts[n] || 0) + 1;
+      }
+      const sold = opps
+        .filter((o) => (stageMap.get(o.pipelineStageId) || "").toLowerCase() === "sold")
+        .map((o) => ({
+          name: o.name,
+          value: o.monetaryValue,
+          changed: (o.lastStageChangeAt || "").slice(0, 10),
+          created: (o.createdAt || "").slice(0, 10),
+        }));
+      return new Response(JSON.stringify({ total: opps.length, counts, sold }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
+    // Stage progression: an opportunity that moved past BOOKED CALL still counts
+    // as an appointment booked. Counting only the CURRENT stage under-reported
+    // every metric, which is why the dashboard numbers looked wrong.
+    const BOOKED_OR_BEYOND = [
+      "booked call",
+      "canceled",
+      "cancelled",
+      "reschedule intent",
+      "no show",
+      "follow up",
+      "dormant",
+      "contract sent",
+      "sold",
+    ];
+    const CONTRACT_OR_BEYOND = ["contract sent", "sold"];
+
     const byDate = new Map<
       string,
       { appointments: number; demos_booked: number; demos_showed: number; deals: number; revenue: number }
     >();
+    const get = (date: string) => {
+      let a = byDate.get(date);
+      if (!a) {
+        a = { appointments: 0, demos_booked: 0, demos_showed: 0, deals: 0, revenue: 0 };
+        byDate.set(date, a);
+      }
+      return a;
+    };
+
     let skipped = 0;
     for (const o of opps) {
-      const stageName = stageMap.get(o.pipelineStageId) || "";
-      const bucket = classifyStage(stageName);
-      if (!bucket) {
+      const stage = (stageMap.get(o.pipelineStageId) || "").toLowerCase().trim();
+      const createdDate = (o.createdAt || o.updatedAt || "").slice(0, 10);
+      const changedDate = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
+      if (!createdDate && !changedDate) {
         skipped++;
         continue;
       }
-      const date = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
-      if (!date) {
-        skipped++;
-        continue;
+
+      let counted = false;
+
+      // Appointment booked — dated by when the opportunity was created (lead/booking date)
+      if (BOOKED_OR_BEYOND.includes(stage)) {
+        get(createdDate || changedDate).appointments++;
+        counted = true;
       }
-      const agg =
-        byDate.get(date) || { appointments: 0, demos_booked: 0, demos_showed: 0, deals: 0, revenue: 0 };
-      if (bucket === "appointment_booked") agg.appointments++;
-      else if (bucket === "demo_booked") agg.demos_booked++;
-      else if (bucket === "demo_showed") agg.demos_showed++;
-      else if (bucket === "closed_won") {
+      // Contract sent (treated as demo showed) — dated by last stage change
+      if (CONTRACT_OR_BEYOND.includes(stage)) {
+        get(changedDate).demos_showed++;
+        counted = true;
+      }
+      // Closed won
+      if (stage === "sold") {
+        const agg = get(changedDate);
         agg.deals++;
         agg.revenue += Number(o.monetaryValue || 0);
+        counted = true;
       }
-      byDate.set(date, agg);
+      if (!counted) skipped++;
     }
 
     const supabase = createClient(
@@ -210,9 +254,26 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Rewrite the whole covered range so stale values from earlier syncs are cleared
+    const dates = [...byDate.keys()].filter(Boolean).sort();
+    const rangeStart = body.startDate || dates[0];
+    const rangeEnd = body.endDate || dates[dates.length - 1];
+
+    if (rangeStart && rangeEnd) {
+      await supabase
+        .from("b2b_ads_metrics")
+        .update({ leads: 0, demo_showed: 0, deals_closed: 0, revenue: 0 })
+        .gte("date", rangeStart)
+        .lte("date", rangeEnd)
+        .ilike("notes", "%GHL pipeline sync%");
+    }
+
     const results: Array<{ date: string; status: string }> = [];
     for (const [date, agg] of byDate) {
-      // Fetch existing row to preserve manual/ad-sync fields
+      if (!date) continue;
+      if (rangeStart && date < rangeStart) continue;
+      if (rangeEnd && date > rangeEnd) continue;
+
       const { data: existing } = await supabase
         .from("b2b_ads_metrics")
         .select("id, notes")
@@ -223,7 +284,6 @@ Deno.serve(async (req) => {
       const payload = {
         date,
         leads: agg.appointments, // Appointments Booked
-        demo_booked: agg.demos_booked,
         demo_showed: agg.demos_showed,
         deals_closed: agg.deals,
         revenue: agg.revenue,
@@ -239,6 +299,7 @@ Deno.serve(async (req) => {
       });
       results.push({ date, status: error ? `error: ${error.message}` : "ok" });
     }
+
 
     return new Response(
       JSON.stringify({
