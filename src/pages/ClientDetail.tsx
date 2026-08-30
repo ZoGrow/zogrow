@@ -125,6 +125,7 @@ export default function ClientDetail() {
   const [metaAdAccountId, setMetaAdAccountId] = useState<string>("");
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSavingMeta, setIsSavingMeta] = useState(false);
+  const [isSyncingGhl, setIsSyncingGhl] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date(),
@@ -207,6 +208,31 @@ export default function ClientDetail() {
     }
     setIsSyncing(false);
   };
+
+  const handleSyncGhl = async () => {
+    if (!client) return;
+    setIsSyncingGhl(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-ghl-client-pipeline", {
+        body: { action: "sync", clientId: client.id },
+      });
+      if (error) throw error;
+      const result = Array.isArray(data?.results) ? data.results[0] : null;
+      if (result?.status && String(result.status).startsWith("error")) {
+        toast.error(String(result.status));
+      } else if (result?.status?.startsWith?.("skipped")) {
+        toast.error("No GHL API key / Location ID set for this client");
+      } else {
+        toast.success("GHL pipeline synced from live opportunities");
+        fetchData();
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to sync GHL pipeline");
+    }
+    setIsSyncingGhl(false);
+  };
+
+
 
 
   useEffect(() => {
@@ -395,6 +421,10 @@ export default function ClientDetail() {
           <Button onClick={handleSyncMeta} disabled={isSyncing || !metaAdAccountId} className="bg-primary hover:bg-primary/90">
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? "animate-spin" : ""}`} />
             {isSyncing ? "Syncing..." : "Sync Meta Ads"}
+          </Button>
+          <Button onClick={handleSyncGhl} disabled={isSyncingGhl} variant="outline">
+            <RefreshCw className={`h-4 w-4 mr-2 ${isSyncingGhl ? "animate-spin" : ""}`} />
+            {isSyncingGhl ? "Syncing GHL..." : "Sync GHL Pipeline"}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
