@@ -201,6 +201,7 @@ Deno.serve(async (req) => {
     // as an appointment booked. Counting only the CURRENT stage under-reported
     // every metric, which is why the dashboard numbers looked wrong.
     const BOOKED_OR_BEYOND = [
+      "new lead",
       "booked call",
       "canceled",
       "cancelled",
@@ -247,14 +248,19 @@ Deno.serve(async (req) => {
         continue;
       }
 
+      // Disqualified leads are excluded from all tracking.
+      if (stage === "disqualified") {
+        skipped++;
+        continue;
+      }
+
       let counted = false;
 
-      // Demos booked — EVERY opportunity counts as a booking, dated by creation date
+      // Demos booked — every non-disqualified opportunity counts as a booking, dated by creation date
       get(createdDate || changedDate).demos_booked++;
       counted = true;
 
       // Appointment booked — dated by when the opportunity was created (lead/booking date)
-      // Disqualified and brand-new (unworked) leads are NOT bookings.
       if (BOOKED_OR_BEYOND.includes(stage)) {
         get(createdDate || changedDate).appointments++;
         counted = true;
