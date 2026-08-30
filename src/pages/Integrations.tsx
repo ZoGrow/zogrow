@@ -111,6 +111,24 @@ export default function Integrations() {
     }
   };
 
+  const runGhlSync = async () => {
+    setSyncingGHL(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-ghl-b2b-pipeline", {
+        body: {},
+      });
+      if (error) throw error;
+      toast.success("GHL pipeline sync completed", {
+        description: data?.message || "B2B appointments, demos, and deals updated.",
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Sync failed";
+      toast.error("GHL sync failed", { description: msg });
+    } finally {
+      setSyncingGHL(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-6 max-w-6xl">
       <div>
