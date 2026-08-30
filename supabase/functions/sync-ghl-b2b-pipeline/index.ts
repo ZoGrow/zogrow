@@ -181,7 +181,16 @@ Deno.serve(async (req) => {
           changed: (o.lastStageChangeAt || "").slice(0, 10),
           created: (o.createdAt || "").slice(0, 10),
         }));
-      return new Response(JSON.stringify({ total: opps.length, counts, sold }), {
+      const month = body.month as string | undefined;
+      const monthCounts: Record<string, number> = {};
+      if (month) {
+        for (const o of opps) {
+          if (!(o.createdAt || "").startsWith(month)) continue;
+          const n = stageMap.get(o.pipelineStageId) || "UNKNOWN";
+          monthCounts[n] = (monthCounts[n] || 0) + 1;
+        }
+      }
+      return new Response(JSON.stringify({ total: opps.length, counts, monthCounts, sold }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
