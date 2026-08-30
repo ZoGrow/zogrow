@@ -202,7 +202,16 @@ Deno.serve(async (req) => {
       "contract sent",
       "sold",
     ];
-    const CONTRACT_OR_BEYOND = ["contract sent", "sold"];
+    // Demo taken/showed: any stage that implies the demo actually happened
+    const DEMO_SHOWED_STAGES = [
+      "follow up",
+      "follow-up",
+      "dormant",
+      "contract sent",
+      "deal lost",
+      "lost",
+      "sold",
+    ];
 
     const byDate = new Map<
       string,
