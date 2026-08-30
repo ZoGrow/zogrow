@@ -202,6 +202,7 @@ Deno.serve(async (req) => {
     // every metric, which is why the dashboard numbers looked wrong.
     const BOOKED_OR_BEYOND = [
       "new leads",
+      "responded",
       "booked call",
       "canceled",
       "cancelled",
