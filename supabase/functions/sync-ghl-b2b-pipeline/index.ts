@@ -42,7 +42,11 @@ async function ghlFetch(path: string, token: string, init?: RequestInit) {
   return JSON.parse(text);
 }
 
-// Classify a stage name into a B2B metric bucket
+// Classify a stage name into a B2B metric bucket.
+// Confirmed mapping for the "1. META ADS" pipeline:
+//   BOOKED CALL   -> appointment_booked (Appointments Booked)
+//   CONTRACT SENT -> demo_showed
+//   SOLD          -> closed_won (Deals Closed + revenue)
 function classifyStage(stageName: string):
   | "appointment_booked"
   | "demo_booked"
@@ -50,11 +54,12 @@ function classifyStage(stageName: string):
   | "closed_won"
   | null {
   const s = stageName.toLowerCase();
-  if (/(won|closed|signed|deal|client)/.test(s) && !/lost/.test(s)) return "closed_won";
+  if (/lost|disqualified|no.?show|cancel/.test(s)) return null;
+  if (/(sold|won|closed|signed)/.test(s)) return "closed_won";
+  if (/contract sent/.test(s)) return "demo_showed";
   if (/demo/.test(s) && /(show|held|done|complete|taken)/.test(s)) return "demo_showed";
-  if (/demo/.test(s)) return "demo_booked";
-  if (/(book|appointment|appt|intro|call|scheduled)/.test(s) && !/(show|held|done|no.?show|cancel)/.test(s))
-    return "appointment_booked";
+  if (/demo/.test(s) && /book/.test(s)) return "demo_booked";
+  if (/booked call|book|appointment|appt/.test(s)) return "appointment_booked";
   return null;
 }
 
@@ -66,24 +71,27 @@ async function fetchAllOpportunities(
   endDate?: string
 ): Promise<GhlOpportunity[]> {
   const all: GhlOpportunity[] = [];
-  let page = 1;
+  let startAfterId: string | undefined;
+  let startAfter: number | undefined;
   const limit = 100;
   for (;;) {
-    const body: Record<string, unknown> = {
-      locationId,
-      pipelineId,
-      limit,
-      page,
-    };
-    const json = await ghlFetch(`/opportunities/search`, token, {
-      method: "POST",
-      body: JSON.stringify(body),
+    const params = new URLSearchParams({
+      location_id: locationId,
+      pipeline_id: pipelineId,
+      limit: String(limit),
     });
+    if (startAfterId && startAfter !== undefined) {
+      params.set("startAfterId", startAfterId);
+      params.set("startAfter", String(startAfter));
+    }
+    const json = await ghlFetch(`/opportunities/search?${params.toString()}`, token);
     const opps: GhlOpportunity[] = json.opportunities || [];
     all.push(...opps);
-    if (opps.length < limit) break;
-    page++;
-    if (page > 50) break; // safety
+    const meta = json.meta || {};
+    if (opps.length < limit || !meta.startAfterId) break;
+    startAfterId = meta.startAfterId;
+    startAfter = meta.startAfter;
+    if (all.length > 5000) break; // safety
   }
   // Filter by last stage change date if range provided
   if (startDate || endDate) {

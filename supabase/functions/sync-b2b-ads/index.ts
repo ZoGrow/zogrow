@@ -50,6 +50,8 @@ async function upsertB2BMetric(
   data: { impressions: number; clicks: number; spend: number; leads: number }
 ) {
   // Use upsert with unique date constraint — only update ad metrics, preserve manual fields
+  // NOTE: `leads` (Appointments Booked) is owned by the GHL pipeline sync —
+  // Meta only updates ad delivery metrics so it never overwrites pipeline/manual data.
   const { error } = await supabase
     .from("b2b_ads_metrics")
     .upsert(
@@ -58,7 +60,6 @@ async function upsertB2BMetric(
         impressions: data.impressions,
         clicks: data.clicks,
         ad_spend: data.spend,
-        leads: data.leads,
       },
       { onConflict: "date", ignoreDuplicates: false }
     );
@@ -70,7 +71,6 @@ async function upsertB2BMetric(
         impressions: data.impressions,
         clicks: data.clicks,
         ad_spend: data.spend,
-        leads: data.leads,
       })
       .eq("date", date);
   }
