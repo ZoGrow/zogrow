@@ -71,24 +71,27 @@ async function fetchAllOpportunities(
   endDate?: string
 ): Promise<GhlOpportunity[]> {
   const all: GhlOpportunity[] = [];
-  let page = 1;
+  let startAfterId: string | undefined;
+  let startAfter: number | undefined;
   const limit = 100;
   for (;;) {
-    const body: Record<string, unknown> = {
-      locationId,
+    const params = new URLSearchParams({
+      location_id: locationId,
       pipeline_id: pipelineId,
-      limit,
-      page,
-    };
-    const json = await ghlFetch(`/opportunities/search`, token, {
-      method: "POST",
-      body: JSON.stringify(body),
+      limit: String(limit),
     });
+    if (startAfterId && startAfter !== undefined) {
+      params.set("startAfterId", startAfterId);
+      params.set("startAfter", String(startAfter));
+    }
+    const json = await ghlFetch(`/opportunities/search?${params.toString()}`, token);
     const opps: GhlOpportunity[] = json.opportunities || [];
     all.push(...opps);
-    if (opps.length < limit) break;
-    page++;
-    if (page > 50) break; // safety
+    const meta = json.meta || {};
+    if (opps.length < limit || !meta.startAfterId) break;
+    startAfterId = meta.startAfterId;
+    startAfter = meta.startAfter;
+    if (all.length > 5000) break; // safety
   }
   // Filter by last stage change date if range provided
   if (startDate || endDate) {
