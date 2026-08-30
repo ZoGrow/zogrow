@@ -201,7 +201,7 @@ Deno.serve(async (req) => {
     // as an appointment booked. Counting only the CURRENT stage under-reported
     // every metric, which is why the dashboard numbers looked wrong.
     const BOOKED_OR_BEYOND = [
-      "new lead",
+      "new leads",
       "booked call",
       "canceled",
       "cancelled",
