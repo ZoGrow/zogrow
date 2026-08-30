@@ -28,45 +28,25 @@ const LIVE_TRANSFER_STAGES = ["live transfers", "live transfer"];
 
 const CLOSED_STAGES = ["sold", "deal won", "deal won 🎊", "won", "closed won"];
 
-// Anything at/after a booked appointment
-const BOOKED_OR_BEYOND = [
-  ...LIVE_TRANSFER_STAGES,
+// Only real booked-appointment stages count as self booked.
+// Nurture stages (new lead, call back, follow up, dormant) are NOT appointments.
+const SELF_BOOKED_STAGES = [
   ...CLOSED_STAGES,
   "booked appointments",
   "booked appointment",
   "booked call",
-  "new leads",
-  "responded",
+  "booked calls",
   "canceled",
   "cancelled",
   "reschedule intent",
   "no show",
-  "follow up",
-  "follow-up",
-  "short-term follow up",
-  "short term follow up",
-  "long-term follow up",
-  "long term follow up",
-  "dormant",
   "contract sent",
   "deal lost",
-  "lost",
 ];
 
 // Stages that mean the appointment actually happened
-const SHOWED_STAGES = [
-  ...CLOSED_STAGES,
-  "follow up",
-  "follow-up",
-  "short-term follow up",
-  "short term follow up",
-  "long-term follow up",
-  "long term follow up",
-  "dormant",
-  "contract sent",
-  "deal lost",
-  "lost",
-];
+const SHOWED_STAGES = [...CLOSED_STAGES, "contract sent", "deal lost"];
+
 
 
 function ghlHeaders(token: string) {
