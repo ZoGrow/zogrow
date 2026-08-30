@@ -22,33 +22,52 @@ interface StageInfo {
   name: string;
 }
 
-// Same stage semantics as the B2B pipeline sync
+// Stage semantics cover both the B2B naming and the B2C
+// "Lead > Appointment" pipeline naming (Live Transfers, Booked Appointments, ...)
+const LIVE_TRANSFER_STAGES = ["live transfers", "live transfer"];
+
+const CLOSED_STAGES = ["sold", "deal won", "deal won 🎊", "won", "closed won"];
+
+// Anything at/after a booked appointment
 const BOOKED_OR_BEYOND = [
+  ...LIVE_TRANSFER_STAGES,
+  ...CLOSED_STAGES,
+  "booked appointments",
+  "booked appointment",
+  "booked call",
   "new leads",
   "responded",
-  "booked call",
   "canceled",
   "cancelled",
   "reschedule intent",
   "no show",
   "follow up",
   "follow-up",
+  "short-term follow up",
+  "short term follow up",
+  "long-term follow up",
+  "long term follow up",
   "dormant",
   "contract sent",
   "deal lost",
   "lost",
-  "sold",
 ];
 
+// Stages that mean the appointment actually happened
 const SHOWED_STAGES = [
+  ...CLOSED_STAGES,
   "follow up",
   "follow-up",
+  "short-term follow up",
+  "short term follow up",
+  "long-term follow up",
+  "long term follow up",
   "dormant",
   "contract sent",
   "deal lost",
   "lost",
-  "sold",
 ];
+
 
 function ghlHeaders(token: string) {
   return {
