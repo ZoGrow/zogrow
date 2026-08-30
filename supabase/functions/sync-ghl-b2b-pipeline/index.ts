@@ -42,7 +42,11 @@ async function ghlFetch(path: string, token: string, init?: RequestInit) {
   return JSON.parse(text);
 }
 
-// Classify a stage name into a B2B metric bucket
+// Classify a stage name into a B2B metric bucket.
+// Confirmed mapping for the "1. META ADS" pipeline:
+//   BOOKED CALL   -> appointment_booked (Appointments Booked)
+//   CONTRACT SENT -> demo_showed
+//   SOLD          -> closed_won (Deals Closed + revenue)
 function classifyStage(stageName: string):
   | "appointment_booked"
   | "demo_booked"
@@ -50,11 +54,12 @@ function classifyStage(stageName: string):
   | "closed_won"
   | null {
   const s = stageName.toLowerCase();
-  if (/(won|closed|signed|deal|client)/.test(s) && !/lost/.test(s)) return "closed_won";
+  if (/lost|disqualified|no.?show|cancel/.test(s)) return null;
+  if (/(sold|won|closed|signed)/.test(s)) return "closed_won";
+  if (/contract sent/.test(s)) return "demo_showed";
   if (/demo/.test(s) && /(show|held|done|complete|taken)/.test(s)) return "demo_showed";
-  if (/demo/.test(s)) return "demo_booked";
-  if (/(book|appointment|appt|intro|call|scheduled)/.test(s) && !/(show|held|done|no.?show|cancel)/.test(s))
-    return "appointment_booked";
+  if (/demo/.test(s) && /book/.test(s)) return "demo_booked";
+  if (/booked call|book|appointment|appt/.test(s)) return "appointment_booked";
   return null;
 }
 
