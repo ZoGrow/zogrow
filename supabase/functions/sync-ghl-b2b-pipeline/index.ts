@@ -93,18 +93,9 @@ async function fetchAllOpportunities(
     startAfter = meta.startAfter;
     if (all.length > 5000) break; // safety
   }
-  // Filter by last stage change date if range provided
-  if (startDate || endDate) {
-    return all.filter((o) => {
-      const d = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
-      if (!d) return false;
-      if (startDate && d < startDate) return false;
-      if (endDate && d > endDate) return false;
-      return true;
-    });
-  }
   return all;
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
