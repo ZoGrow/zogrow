@@ -186,6 +186,10 @@ export default function Integrations() {
               <RefreshCw className={`h-4 w-4 mr-2 ${syncingB2B ? "animate-spin" : ""}`} />
               {syncingB2B ? "Syncing…" : "Sync B2B Ads"}
             </Button>
+            <Button variant="outline" onClick={runGhlSync} disabled={syncingGHL}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncingGHL ? "animate-spin" : ""}`} />
+              {syncingGHL ? "Syncing…" : "Sync GHL Pipeline"}
+            </Button>
           </div>
 
           <Separator />
