@@ -22,33 +22,52 @@ interface StageInfo {
   name: string;
 }
 
-// Same stage semantics as the B2B pipeline sync
+// Stage semantics cover both the B2B naming and the B2C
+// "Lead > Appointment" pipeline naming (Live Transfers, Booked Appointments, ...)
+const LIVE_TRANSFER_STAGES = ["live transfers", "live transfer"];
+
+const CLOSED_STAGES = ["sold", "deal won", "deal won 🎊", "won", "closed won"];
+
+// Anything at/after a booked appointment
 const BOOKED_OR_BEYOND = [
+  ...LIVE_TRANSFER_STAGES,
+  ...CLOSED_STAGES,
+  "booked appointments",
+  "booked appointment",
+  "booked call",
   "new leads",
   "responded",
-  "booked call",
   "canceled",
   "cancelled",
   "reschedule intent",
   "no show",
   "follow up",
   "follow-up",
+  "short-term follow up",
+  "short term follow up",
+  "long-term follow up",
+  "long term follow up",
   "dormant",
   "contract sent",
   "deal lost",
   "lost",
-  "sold",
 ];
 
+// Stages that mean the appointment actually happened
 const SHOWED_STAGES = [
+  ...CLOSED_STAGES,
   "follow up",
   "follow-up",
+  "short-term follow up",
+  "short term follow up",
+  "long-term follow up",
+  "long term follow up",
   "dormant",
   "contract sent",
   "deal lost",
   "lost",
-  "sold",
 ];
+
 
 function ghlHeaders(token: string) {
   return {
@@ -139,12 +158,19 @@ async function syncClient(
 
   const byDate = new Map<
     string,
-    { leads: number; booked: number; showed: number; deals: number; revenue: number }
+    {
+      leads: number;
+      booked: number;
+      transfers: number;
+      showed: number;
+      deals: number;
+      revenue: number;
+    }
   >();
   const get = (date: string) => {
     let a = byDate.get(date);
     if (!a) {
-      a = { leads: 0, booked: 0, showed: 0, deals: 0, revenue: 0 };
+      a = { leads: 0, booked: 0, transfers: 0, showed: 0, deals: 0, revenue: 0 };
       byDate.set(date, a);
     }
     return a;
@@ -165,14 +191,19 @@ async function syncClient(
     }
 
     get(createdDate || changedDate).leads++;
-    if (BOOKED_OR_BEYOND.includes(stage)) get(createdDate || changedDate).booked++;
+    if (LIVE_TRANSFER_STAGES.includes(stage)) {
+      get(createdDate || changedDate).transfers++;
+    } else if (BOOKED_OR_BEYOND.includes(stage)) {
+      get(createdDate || changedDate).booked++;
+    }
     if (SHOWED_STAGES.includes(stage)) get(changedDate).showed++;
-    if (stage === "sold") {
+    if (CLOSED_STAGES.includes(stage)) {
       const agg = get(changedDate);
       agg.deals++;
       agg.revenue += Number(o.monetaryValue || 0);
     }
   }
+
 
   // Pipeline data lives on its own campaign row so manual entries (campaign_id NULL)
   // and Meta ad rows are never overwritten.
@@ -211,6 +242,7 @@ async function syncClient(
       .update({
         leads: 0,
         self_booked: 0,
+        live_transfers: 0,
         appointments_showed: 0,
         deals_closed: 0,
         revenue: 0,
@@ -234,6 +266,7 @@ async function syncClient(
         date,
         leads: agg.leads,
         self_booked: agg.booked,
+        live_transfers: agg.transfers,
         appointments_showed: agg.showed,
         deals_closed: agg.deals,
         revenue: agg.revenue,
@@ -243,6 +276,7 @@ async function syncClient(
     );
     if (!error) written++;
   }
+
 
   await supabase
     .from("client_integrations")
@@ -306,6 +340,54 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    if (action === "debug") {
+      const month: string | undefined = body.month; // "YYYY-MM"
+      const results = [];
+      for (const i of integrations || []) {
+        const token = (i.ghl_api_key as string | null)?.trim();
+        const loc = (i.ghl_location_id as string | null)?.trim();
+        if (!token || !loc) continue;
+        const pj = await ghlFetch(`/opportunities/pipelines?locationId=${loc}`, token);
+        const pipelines = (pj.pipelines || []) as Array<{ id: string; name: string; stages?: StageInfo[] }>;
+        const wanted = (i.ghl_pipeline_name as string | null)?.toLowerCase().trim();
+        const pipeline =
+          (i.ghl_pipeline_id && pipelines.find((p) => p.id === i.ghl_pipeline_id)) ||
+          (wanted && pipelines.find((p) => p.name.toLowerCase().includes(wanted))) ||
+          pipelines[0];
+        if (!pipeline) {
+          results.push({ client_id: i.client_id, error: "no pipeline" });
+          continue;
+        }
+        const stageMap = new Map<string, string>();
+        for (const s of pipeline.stages || []) stageMap.set(s.id, s.name);
+        const opps = await fetchAllOpportunities(token, loc, pipeline.id);
+        const counts: Record<string, number> = {};
+        let total = 0;
+        for (const o of opps) {
+          const created = (o.createdAt || o.updatedAt || "").slice(0, 7);
+          if (month && created !== month) continue;
+          const name = stageMap.get(o.pipelineStageId) || "unknown";
+          counts[name] = (counts[name] || 0) + 1;
+          total++;
+        }
+        results.push({
+          client_id: i.client_id,
+          pipeline: pipeline.name,
+          all_pipelines: pipelines.map((p) => p.name),
+          stages: (pipeline.stages || []).map((s) => s.name),
+          month: month || "all",
+          total,
+          counts,
+        });
+      }
+      return new Response(JSON.stringify({ results }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
 
     const results = [];
     for (const i of integrations || []) {
