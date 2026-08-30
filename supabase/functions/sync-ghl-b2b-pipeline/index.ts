@@ -243,8 +243,8 @@ Deno.serve(async (req) => {
         get(createdDate || changedDate).appointments++;
         counted = true;
       }
-      // Contract sent (treated as demo showed) — dated by last stage change
-      if (CONTRACT_OR_BEYOND.includes(stage)) {
+      // Demo showed — follow up / dormant / contract sent / deal lost / sold
+      if (DEMO_SHOWED_STAGES.includes(stage)) {
         get(changedDate).demos_showed++;
         counted = true;
       }
