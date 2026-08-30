@@ -115,7 +115,7 @@ Deno.serve(async (req) => {
     const action = body.action || "list";
 
     // Fetch pipelines for this location
-    const pipelinesJson = await ghlFetch(`/pipelines/?locationId=${locationId}`, token);
+    const pipelinesJson = await ghlFetch(`/opportunities/pipelines?locationId=${locationId}`, token);
     const pipelines = (pipelinesJson.pipelines || []) as Array<{
       id: string;
       name: string;
