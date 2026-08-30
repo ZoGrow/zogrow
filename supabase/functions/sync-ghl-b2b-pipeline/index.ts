@@ -200,6 +200,8 @@ Deno.serve(async (req) => {
       "follow up",
       "dormant",
       "contract sent",
+      "deal lost",
+      "lost",
       "sold",
     ];
     // Demo taken/showed: any stage that implies the demo actually happened
