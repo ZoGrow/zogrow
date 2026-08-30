@@ -173,7 +173,7 @@ async function syncClient(
     get(createdDate || changedDate).leads++;
     if (LIVE_TRANSFER_STAGES.includes(stage)) {
       get(createdDate || changedDate).transfers++;
-    } else if (BOOKED_OR_BEYOND.includes(stage)) {
+    } else if (SELF_BOOKED_STAGES.includes(stage)) {
       get(createdDate || changedDate).booked++;
     }
     if (SHOWED_STAGES.includes(stage)) get(changedDate).showed++;
