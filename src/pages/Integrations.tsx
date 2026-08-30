@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ClientGhlIntegrations } from "@/components/integrations/ClientGhlIntegrations";
 import {
   Facebook,
   Webhook,
@@ -249,6 +250,8 @@ export default function Integrations() {
           </p>
         </CardContent>
       </Card>
+
+      <ClientGhlIntegrations />
 
       {/* Webhooks */}
       <Card className="glass-card">
