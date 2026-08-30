@@ -200,9 +200,20 @@ Deno.serve(async (req) => {
       "follow up",
       "dormant",
       "contract sent",
+      "deal lost",
+      "lost",
       "sold",
     ];
-    const CONTRACT_OR_BEYOND = ["contract sent", "sold"];
+    // Demo taken/showed: any stage that implies the demo actually happened
+    const DEMO_SHOWED_STAGES = [
+      "follow up",
+      "follow-up",
+      "dormant",
+      "contract sent",
+      "deal lost",
+      "lost",
+      "sold",
+    ];
 
     const byDate = new Map<
       string,
@@ -234,8 +245,8 @@ Deno.serve(async (req) => {
         get(createdDate || changedDate).appointments++;
         counted = true;
       }
-      // Contract sent (treated as demo showed) — dated by last stage change
-      if (CONTRACT_OR_BEYOND.includes(stage)) {
+      // Demo showed — follow up / dormant / contract sent / deal lost / sold
+      if (DEMO_SHOWED_STAGES.includes(stage)) {
         get(changedDate).demos_showed++;
         counted = true;
       }
