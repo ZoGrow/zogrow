@@ -249,7 +249,12 @@ Deno.serve(async (req) => {
 
       let counted = false;
 
+      // Demos booked — EVERY opportunity counts as a booking, dated by creation date
+      get(createdDate || changedDate).demos_booked++;
+      counted = true;
+
       // Appointment booked — dated by when the opportunity was created (lead/booking date)
+      // Disqualified and brand-new (unworked) leads are NOT bookings.
       if (BOOKED_OR_BEYOND.includes(stage)) {
         get(createdDate || changedDate).appointments++;
         counted = true;
