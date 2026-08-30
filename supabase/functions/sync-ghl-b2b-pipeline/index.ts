@@ -134,12 +134,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (action !== "sync") {
+    if (action !== "sync" && action !== "debug") {
       return new Response(JSON.stringify({ error: "Unknown action" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     // Find the "Meta Ads" pipeline (or a pipelineId passed explicitly)
     let pipeline = body.pipelineId
