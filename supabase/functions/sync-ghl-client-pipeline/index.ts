@@ -307,6 +307,54 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "debug") {
+      const month: string | undefined = body.month; // "YYYY-MM"
+      const results = [];
+      for (const i of integrations || []) {
+        const token = (i.ghl_api_key as string | null)?.trim();
+        const loc = (i.ghl_location_id as string | null)?.trim();
+        if (!token || !loc) continue;
+        const pj = await ghlFetch(`/opportunities/pipelines?locationId=${loc}`, token);
+        const pipelines = (pj.pipelines || []) as Array<{ id: string; name: string; stages?: StageInfo[] }>;
+        const wanted = (i.ghl_pipeline_name as string | null)?.toLowerCase().trim();
+        const pipeline =
+          (i.ghl_pipeline_id && pipelines.find((p) => p.id === i.ghl_pipeline_id)) ||
+          (wanted && pipelines.find((p) => p.name.toLowerCase().includes(wanted))) ||
+          pipelines[0];
+        if (!pipeline) {
+          results.push({ client_id: i.client_id, error: "no pipeline" });
+          continue;
+        }
+        const stageMap = new Map<string, string>();
+        for (const s of pipeline.stages || []) stageMap.set(s.id, s.name);
+        const opps = await fetchAllOpportunities(token, loc, pipeline.id);
+        const counts: Record<string, number> = {};
+        let total = 0;
+        for (const o of opps) {
+          const created = (o.createdAt || o.updatedAt || "").slice(0, 7);
+          if (month && created !== month) continue;
+          const name = stageMap.get(o.pipelineStageId) || "unknown";
+          counts[name] = (counts[name] || 0) + 1;
+          total++;
+        }
+        results.push({
+          client_id: i.client_id,
+          pipeline: pipeline.name,
+          all_pipelines: pipelines.map((p) => p.name),
+          stages: (pipeline.stages || []).map((s) => s.name),
+          month: month || "all",
+          total,
+          counts,
+        });
+      }
+      return new Response(JSON.stringify({ results }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
+
     const results = [];
     for (const i of integrations || []) {
       try {
