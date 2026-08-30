@@ -66,6 +66,9 @@ export default function Clients() {
   const [newState, setNewState] = useState("");
   const [newNiche, setNewNiche] = useState("FTHB");
   const [newUserId, setNewUserId] = useState<string>("");
+  const [newGhlApiKey, setNewGhlApiKey] = useState("");
+  const [newGhlLocationId, setNewGhlLocationId] = useState("");
+  const [newGhlPipelineName, setNewGhlPipelineName] = useState("");
 
   // Build a map of user_id to user info for display
   const userMap = useMemo(() => {
@@ -132,6 +135,23 @@ export default function Clients() {
       toast.error("Failed to add client");
       console.error(error);
     } else if (data) {
+      if (newGhlApiKey.trim() || newGhlLocationId.trim()) {
+        const { error: integrationError } = await supabase.from("client_integrations").insert({
+          client_id: data.id,
+          ghl_api_key: newGhlApiKey.trim() || null,
+          ghl_location_id: newGhlLocationId.trim() || null,
+          ghl_pipeline_name: newGhlPipelineName.trim() || null,
+        });
+        if (integrationError) {
+          toast.error("Client added, but GHL credentials failed to save");
+          console.error(integrationError);
+        } else {
+          supabase.functions
+            .invoke("sync-ghl-client-pipeline", { body: { action: "sync", clientId: data.id } })
+            .catch((e) => console.error(e));
+          toast.success("GHL pipeline connected — first sync started");
+        }
+      }
       setClients((prev) => [...prev, data]);
       toast.success(`${newClientName} has been added`);
       setNewClientName("");
@@ -139,6 +159,9 @@ export default function Clients() {
       setNewState("");
       setNewNiche("FTHB");
       setNewUserId("");
+      setNewGhlApiKey("");
+      setNewGhlLocationId("");
+      setNewGhlPipelineName("");
       setIsAddDialogOpen(false);
     }
     setIsSubmitting(false);
@@ -284,6 +307,44 @@ export default function Clients() {
                   </Select>
                 </div>
               )}
+              <div className="space-y-3 rounded-lg border border-border p-3">
+                <div>
+                  <p className="text-sm font-medium">GoHighLevel Pipeline (optional)</p>
+                  <p className="text-xs text-muted-foreground">
+                    Add this client's GHL credentials to auto-track their pipeline numbers.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ghlApiKey">GHL API Key</Label>
+                  <Input
+                    id="ghlApiKey"
+                    type="password"
+                    placeholder="pit-xxxxxxxx"
+                    value={newGhlApiKey}
+                    onChange={(e) => setNewGhlApiKey(e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ghlLocationId">GHL Location ID</Label>
+                  <Input
+                    id="ghlLocationId"
+                    placeholder="knEiXKCriAscTUMZSzbr"
+                    value={newGhlLocationId}
+                    onChange={(e) => setNewGhlLocationId(e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ghlPipelineName">Pipeline name (optional)</Label>
+                  <Input
+                    id="ghlPipelineName"
+                    placeholder="e.g. Meta Ads"
+                    value={newGhlPipelineName}
+                    onChange={(e) => setNewGhlPipelineName(e.target.value)}
+                  />
+                </div>
+              </div>
               <Button onClick={handleAddClient} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Adding..." : "Add Client"}
               </Button>
