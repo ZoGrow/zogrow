@@ -158,12 +158,19 @@ async function syncClient(
 
   const byDate = new Map<
     string,
-    { leads: number; booked: number; showed: number; deals: number; revenue: number }
+    {
+      leads: number;
+      booked: number;
+      transfers: number;
+      showed: number;
+      deals: number;
+      revenue: number;
+    }
   >();
   const get = (date: string) => {
     let a = byDate.get(date);
     if (!a) {
-      a = { leads: 0, booked: 0, showed: 0, deals: 0, revenue: 0 };
+      a = { leads: 0, booked: 0, transfers: 0, showed: 0, deals: 0, revenue: 0 };
       byDate.set(date, a);
     }
     return a;
@@ -184,14 +191,19 @@ async function syncClient(
     }
 
     get(createdDate || changedDate).leads++;
-    if (BOOKED_OR_BEYOND.includes(stage)) get(createdDate || changedDate).booked++;
+    if (LIVE_TRANSFER_STAGES.includes(stage)) {
+      get(createdDate || changedDate).transfers++;
+    } else if (BOOKED_OR_BEYOND.includes(stage)) {
+      get(createdDate || changedDate).booked++;
+    }
     if (SHOWED_STAGES.includes(stage)) get(changedDate).showed++;
-    if (stage === "sold") {
+    if (CLOSED_STAGES.includes(stage)) {
       const agg = get(changedDate);
       agg.deals++;
       agg.revenue += Number(o.monetaryValue || 0);
     }
   }
+
 
   // Pipeline data lives on its own campaign row so manual entries (campaign_id NULL)
   // and Meta ad rows are never overwritten.
