@@ -55,6 +55,7 @@ function CopyButton({ value }: { value: string }) {
 export default function Integrations() {
   const [syncingMeta, setSyncingMeta] = useState(false);
   const [syncingB2B, setSyncingB2B] = useState(false);
+  const [syncingGHL, setSyncingGHL] = useState(false);
   const [days, setDays] = useState(30);
   const [b2bAdAccountId, setB2bAdAccountId] = useState("");
   const [savingB2bId, setSavingB2bId] = useState(false);
@@ -107,6 +108,24 @@ export default function Integrations() {
       toast.error("Sync failed", { description: msg });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runGhlSync = async () => {
+    setSyncingGHL(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-ghl-b2b-pipeline", {
+        body: {},
+      });
+      if (error) throw error;
+      toast.success("GHL pipeline sync completed", {
+        description: data?.message || "B2B appointments, demos, and deals updated.",
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Sync failed";
+      toast.error("GHL sync failed", { description: msg });
+    } finally {
+      setSyncingGHL(false);
     }
   };
 
@@ -166,6 +185,10 @@ export default function Integrations() {
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${syncingB2B ? "animate-spin" : ""}`} />
               {syncingB2B ? "Syncing…" : "Sync B2B Ads"}
+            </Button>
+            <Button variant="outline" onClick={runGhlSync} disabled={syncingGHL}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncingGHL ? "animate-spin" : ""}`} />
+              {syncingGHL ? "Syncing…" : "Sync GHL Pipeline"}
             </Button>
           </div>
 
