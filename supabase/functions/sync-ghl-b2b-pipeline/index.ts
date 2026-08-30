@@ -76,7 +76,7 @@ async function fetchAllOpportunities(
   for (;;) {
     const body: Record<string, unknown> = {
       locationId,
-      pipelineId,
+      pipeline_id: pipelineId,
       limit,
       page,
     };
