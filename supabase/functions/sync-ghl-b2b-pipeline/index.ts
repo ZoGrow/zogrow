@@ -287,7 +287,7 @@ Deno.serve(async (req) => {
     if (rangeStart && rangeEnd) {
       await supabase
         .from("b2b_ads_metrics")
-        .update({ leads: 0, demo_showed: 0, deals_closed: 0, revenue: 0 })
+        .update({ leads: 0, demo_booked: 0, demo_showed: 0, deals_closed: 0, revenue: 0 })
         .gte("date", rangeStart)
         .lte("date", rangeEnd)
         .ilike("notes", "%GHL pipeline sync%");
@@ -309,6 +309,7 @@ Deno.serve(async (req) => {
       const payload = {
         date,
         leads: agg.appointments, // Appointments Booked
+        demo_booked: agg.demos_booked, // Demos Booked = every opportunity
         demo_showed: agg.demos_showed,
         deals_closed: agg.deals,
         revenue: agg.revenue,
