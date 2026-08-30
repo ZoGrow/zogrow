@@ -422,6 +422,10 @@ export default function ClientDetail() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? "animate-spin" : ""}`} />
             {isSyncing ? "Syncing..." : "Sync Meta Ads"}
           </Button>
+          <Button onClick={handleSyncGhl} disabled={isSyncingGhl} variant="outline">
+            <RefreshCw className={`h-4 w-4 mr-2 ${isSyncingGhl ? "animate-spin" : ""}`} />
+            {isSyncingGhl ? "Syncing GHL..." : "Sync GHL Pipeline"}
+          </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
           Pulls today's Impressions, Clicks, Spend & Leads from Meta Ads automatically.
