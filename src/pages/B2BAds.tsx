@@ -394,7 +394,7 @@ export default function B2BAds() {
       </div>
 
       {/* Row 1: Primary Volume Metrics */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <KPICard
           title="Total Spend"
           value={formatCurrency(totals.ad_spend)}
@@ -402,20 +402,14 @@ export default function B2BAds() {
           variant="purple"
         />
         <KPICard
-          title="Appointments Booked"
-          value={formatNumber(totals.leads)}
-          icon={Users}
+          title="Demo Booked"
+          value={totals.demo_booked}
+          icon={CalendarIconSolid}
           variant="purple"
         />
         <KPICard
           title="Intro Calls Booked"
           value={totals.intro_call_booked}
-          icon={CalendarIconSolid}
-          variant="purple"
-        />
-        <KPICard
-          title="Demo Booked"
-          value={totals.demo_booked}
           icon={CalendarIconSolid}
           variant="purple"
         />
