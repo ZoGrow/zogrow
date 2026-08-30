@@ -242,6 +242,7 @@ async function syncClient(
       .update({
         leads: 0,
         self_booked: 0,
+        live_transfers: 0,
         appointments_showed: 0,
         deals_closed: 0,
         revenue: 0,
@@ -265,6 +266,7 @@ async function syncClient(
         date,
         leads: agg.leads,
         self_booked: agg.booked,
+        live_transfers: agg.transfers,
         appointments_showed: agg.showed,
         deals_closed: agg.deals,
         revenue: agg.revenue,
@@ -274,6 +276,7 @@ async function syncClient(
     );
     if (!error) written++;
   }
+
 
   await supabase
     .from("client_integrations")
