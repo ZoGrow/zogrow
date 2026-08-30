@@ -209,6 +209,31 @@ export default function ClientDetail() {
     setIsSyncing(false);
   };
 
+  const handleSyncGhl = async () => {
+    if (!client) return;
+    setIsSyncingGhl(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-ghl-client-pipeline", {
+        body: { action: "sync", clientId: client.id },
+      });
+      if (error) throw error;
+      const result = Array.isArray(data?.results) ? data.results[0] : null;
+      if (result?.status && String(result.status).startsWith("error")) {
+        toast.error(String(result.status));
+      } else if (result?.status?.startsWith?.("skipped")) {
+        toast.error("No GHL API key / Location ID set for this client");
+      } else {
+        toast.success("GHL pipeline synced from live opportunities");
+        fetchData();
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to sync GHL pipeline");
+    }
+    setIsSyncingGhl(false);
+  };
+
+
+
 
   useEffect(() => {
     void fetchData();
