@@ -386,6 +386,29 @@ export default function B2BAds() {
             <RefreshCw className="h-4 w-4 mr-2" />
             Sync Meta
           </Button>
+          <Button
+            variant="outline"
+            disabled={syncingGhl}
+            onClick={async () => {
+              setSyncingGhl(true);
+              toast.info("Syncing GHL pipeline...");
+              try {
+                const { error } = await supabase.functions.invoke("sync-ghl-b2b-pipeline", {
+                  body: { action: "sync" },
+                });
+                if (error) throw error;
+                toast.success("GHL pipeline synced");
+                fetchMetrics();
+              } catch (err: any) {
+                toast.error(err.message || "GHL sync failed");
+              } finally {
+                setSyncingGhl(false);
+              }
+            }}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${syncingGhl ? "animate-spin" : ""}`} />
+            {syncingGhl ? "Syncing…" : "Sync GHL"}
+          </Button>
           <Button onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData(initialFormData); }}>
             <Plus className="h-4 w-4 mr-2" />
             Add Entry
