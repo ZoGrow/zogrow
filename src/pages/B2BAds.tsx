@@ -184,9 +184,40 @@ export default function B2BAds() {
     }
   };
 
+  // Silent background GHL sync so the dashboard always reflects live opportunities
+  const lastAutoSync = useRef<number>(0);
+  const autoSyncGhl = async () => {
+    const now = Date.now();
+    if (now - lastAutoSync.current < 5 * 60 * 1000) return;
+    lastAutoSync.current = now;
+    try {
+      await supabase.functions.invoke("sync-ghl-b2b-pipeline", { body: { action: "sync" } });
+      await fetchMetrics();
+    } catch {
+      // background sync — stay silent
+    }
+  };
+
   useEffect(() => {
     fetchMetrics();
   }, [dateRange]);
+
+  useEffect(() => {
+    void autoSyncGhl();
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") {
+        void autoSyncGhl();
+      }
+    };
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
+
 
   const handleInputChange = (field: keyof FormData, value: string | Date) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
