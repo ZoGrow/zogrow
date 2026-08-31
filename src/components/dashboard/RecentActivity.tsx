@@ -20,9 +20,9 @@ export function RecentActivity({ className }: { className?: string }) {
 
   useEffect(() => {
     const fetchToday = async () => {
-      // Local YYYY-MM-DD
-      const now = new Date();
-      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      // Metrics are bucketed by UTC date (GHL/Meta syncs), so match on UTC today
+      const today = new Date().toISOString().split("T")[0];
+
 
       const [transferRes, apptRes] = await Promise.all([
         supabase
