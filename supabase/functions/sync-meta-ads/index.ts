@@ -87,7 +87,7 @@ async function upsertMetric(
     // Only update ad metrics - NEVER overwrite appointment/manual fields
     await supabase
       .from("metrics")
-      .update({ impressions: data.impressions, clicks: data.clicks, ad_spend: data.spend, leads: data.leads })
+      .update({ impressions: data.impressions, clicks: data.clicks, ad_spend: data.spend })
       .eq("id", existing[0].id);
   } else {
     // For new rows, only insert ad metrics. Webhook/manual fields live on their own
@@ -101,7 +101,6 @@ async function upsertMetric(
         impressions: data.impressions,
         clicks: data.clicks,
         ad_spend: data.spend,
-        leads: data.leads,
       });
   }
 }
