@@ -426,7 +426,7 @@ export default function B2BAds() {
       </div>
 
       {/* Row 1: Primary Volume Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Total Spend"
           value={formatCurrency(totals.ad_spend)}

@@ -31,6 +31,7 @@ const WEBHOOKS = [
   { name: "B2B Pickup", path: "zogrow-b2b-pickup", description: "B2B call answered" },
   { name: "B2B Intro Booked", path: "zogrow-b2b-intro", description: "B2B intro call booked" },
   { name: "B2B Demo Booked", path: "zogrow-b2b-demo", description: "B2B demo booked" },
+  { name: "B2B Survey Fill-Out", path: "zogrow-b2b-survey", description: "B2B ad lead completed the survey" },
 ];
 
 function CopyButton({ value }: { value: string }) {
