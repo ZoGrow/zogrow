@@ -106,13 +106,11 @@ export function EnhancedKPICard({
         </div>
       </div>
       
-      <p className="text-2xl font-bold tracking-tight">{value}</p>
+      <p className="text-2xl font-bold tracking-tight mb-1">{value}</p>
       
       {subtitle && (
-        <p className="text-xs text-muted-foreground mt-1 mb-2">{subtitle}</p>
+        <p className="text-xs text-muted-foreground mb-2">{subtitle}</p>
       )}
-      
-      {!subtitle && <div className="mb-2" />}
       
       {showComparisons && (hasPeriodComparison || hasAgencyComparison) && (
         <div className="space-y-1">
