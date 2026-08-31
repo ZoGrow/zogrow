@@ -291,6 +291,7 @@ export default function ClientDetail() {
       lead_to_live_transfer: totals.leads > 0 ? (totals.live_transfers / totals.leads) * 100 : 0,
       lead_to_booked: totals.leads > 0 ? (totalBooked / totals.leads) * 100 : 0,
       lead_to_self_booked: totals.leads > 0 ? (totals.self_booked / totals.leads) * 100 : 0,
+      lead_to_sales_team_booked: totals.leads > 0 ? (totals.sales_team_booked / totals.leads) * 100 : 0,
       pickup_rate: totals.dials_made > 0 ? (totals.pickups / totals.dials_made) * 100 : 0,
     };
   }, [metricsData]);
@@ -463,6 +464,7 @@ export default function ClientDetail() {
         <KPICard
           title="Sales Team Booked"
           value={formatNumber(metrics.sales_team_booked)}
+          subtitle={`${metrics.lead_to_sales_team_booked.toFixed(1)}% of leads`}
           icon={Calendar}
           variant="primary"
         />
