@@ -94,6 +94,7 @@ export type Database = {
           qualified_leads: number | null
           qualified_showed: number | null
           revenue: number | null
+          survey_fillouts: number
           updated_at: string
         }
         Insert: {
@@ -121,6 +122,7 @@ export type Database = {
           qualified_leads?: number | null
           qualified_showed?: number | null
           revenue?: number | null
+          survey_fillouts?: number
           updated_at?: string
         }
         Update: {
@@ -148,6 +150,7 @@ export type Database = {
           qualified_leads?: number | null
           qualified_showed?: number | null
           revenue?: number | null
+          survey_fillouts?: number
           updated_at?: string
         }
         Relationships: [
@@ -197,6 +200,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      b2b_survey_submissions: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          payload: Json | null
+          phone: string | null
+          source: string | null
+          submitted_at: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          payload?: Json | null
+          phone?: string | null
+          source?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          payload?: Json | null
+          phone?: string | null
+          source?: string | null
+          submitted_at?: string
+        }
+        Relationships: []
       }
       campaigns: {
         Row: {

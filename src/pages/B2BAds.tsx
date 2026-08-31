@@ -46,6 +46,7 @@ interface B2BAdsMetric {
   ad_spend: number;
   leads: number;
   qualified_leads: number;
+  survey_fillouts: number;
   dials_made: number;
   pickups: number;
   intro_call_booked: number;
@@ -67,6 +68,7 @@ interface FormData {
   ad_spend: string;
   leads: string;
   qualified_leads: string;
+  survey_fillouts: string;
   intro_call_booked: string;
   intro_call_showed: string;
   demo_booked: string;
@@ -86,6 +88,7 @@ const initialFormData: FormData = {
   ad_spend: "",
   leads: "",
   qualified_leads: "",
+  survey_fillouts: "",
   intro_call_booked: "",
   intro_call_showed: "",
   demo_booked: "",
@@ -205,6 +208,7 @@ export default function B2BAds() {
         ad_spend: parseFloat(formData.ad_spend) || 0,
         leads: parseInt(formData.leads) || 0,
         qualified_leads: parseInt(formData.qualified_leads) || 0,
+        survey_fillouts: parseInt(formData.survey_fillouts) || 0,
         intro_call_booked: parseInt(formData.intro_call_booked) || 0,
         intro_call_showed: parseInt(formData.intro_call_showed) || 0,
         demo_booked: parseInt(formData.demo_booked) || 0,
@@ -254,6 +258,7 @@ export default function B2BAds() {
       ad_spend: metric.ad_spend?.toString() || "",
       leads: metric.leads?.toString() || "",
       qualified_leads: (metric.qualified_leads as number)?.toString() || "",
+      survey_fillouts: (metric as any).survey_fillouts?.toString() || "",
       intro_call_booked: (metric as any).intro_call_booked?.toString() || "",
       intro_call_showed: (metric as any).intro_call_showed?.toString() || "",
       demo_booked: (metric as any).demo_booked?.toString() || "",
@@ -292,6 +297,7 @@ export default function B2BAds() {
         ad_spend: acc.ad_spend + (m.ad_spend || 0),
         leads: acc.leads + (m.leads || 0),
         qualified_leads: acc.qualified_leads + ((m as any).qualified_leads || 0),
+        survey_fillouts: acc.survey_fillouts + ((m as any).survey_fillouts || 0),
         intro_call_booked: acc.intro_call_booked + ((m as any).intro_call_booked || 0),
         intro_call_showed: acc.intro_call_showed + ((m as any).intro_call_showed || 0),
         demo_booked: acc.demo_booked + ((m as any).demo_booked || 0),
@@ -308,6 +314,7 @@ export default function B2BAds() {
         ad_spend: 0,
         leads: 0,
         qualified_leads: 0,
+        survey_fillouts: 0,
         intro_call_booked: 0,
         intro_call_showed: 0,
         demo_booked: 0,
@@ -334,6 +341,7 @@ export default function B2BAds() {
       closeRate: safeDivide(totals.deals_closed, totals.demo_showed) * 100,
       qualifiedIntroShowRate: safeDivide(totals.qualified_intro_showed, totals.intro_call_showed) * 100,
       cpl: safeDivide(totals.ad_spend, totals.leads),
+      costPerSurvey: safeDivide(totals.ad_spend, totals.survey_fillouts),
       costPerQualifiedLead: safeDivide(totals.ad_spend, totals.qualified_leads),
       costPerIntroBooked: safeDivide(totals.ad_spend, totals.intro_call_booked),
       costPerIntroShowed: safeDivide(totals.ad_spend, totals.intro_call_showed),
@@ -418,7 +426,7 @@ export default function B2BAds() {
       </div>
 
       {/* Row 1: Primary Volume Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Total Spend"
           value={formatCurrency(totals.ad_spend)}
@@ -435,6 +443,13 @@ export default function B2BAds() {
           title="Intro Calls Booked"
           value={totals.intro_call_booked}
           icon={CalendarIconSolid}
+          variant="purple"
+        />
+        <KPICard
+          title="Survey Fill-Outs"
+          value={totals.survey_fillouts}
+          subtitle={`${formatCurrency(kpis.costPerSurvey)} per fill-out`}
+          icon={FileText}
           variant="purple"
         />
       </div>
@@ -669,6 +684,16 @@ export default function B2BAds() {
                 />
               </div>
               <div className="space-y-2">
+                <Label>Survey Fill-Outs</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={formData.survey_fillouts}
+                  onChange={(e) => handleInputChange("survey_fillouts", e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label>Intro Calls Booked</Label>
                 <Input
                   type="number"
@@ -818,6 +843,7 @@ export default function B2BAds() {
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Spend</TableHead>
                     <TableHead className="text-right">Appts Bkd</TableHead>
+                    <TableHead className="text-right">Surveys</TableHead>
                     <TableHead className="text-right">Intro Bkd</TableHead>
                     <TableHead className="text-right">Intro Shw</TableHead>
                     <TableHead className="text-right">Demo Bkd</TableHead>
@@ -838,6 +864,7 @@ export default function B2BAds() {
                       </TableCell>
                       <TableCell className="text-right">{formatCurrency(metric.ad_spend || 0)}</TableCell>
                       <TableCell className="text-right">{metric.leads || 0}</TableCell>
+                      <TableCell className="text-right">{(metric as any).survey_fillouts || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).intro_call_booked || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).intro_call_showed || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).demo_booked || 0}</TableCell>
@@ -872,6 +899,7 @@ export default function B2BAds() {
                     <TableCell>Total</TableCell>
                     <TableCell className="text-right">{formatCurrency(totals.ad_spend)}</TableCell>
                     <TableCell className="text-right">{totals.leads}</TableCell>
+                    <TableCell className="text-right">{totals.survey_fillouts}</TableCell>
                     <TableCell className="text-right">{totals.intro_call_booked}</TableCell>
                     <TableCell className="text-right">{totals.intro_call_showed}</TableCell>
                     <TableCell className="text-right">{totals.demo_booked}</TableCell>
