@@ -20,9 +20,9 @@ export function RecentActivity({ className }: { className?: string }) {
 
   useEffect(() => {
     const fetchToday = async () => {
-      // Local YYYY-MM-DD
-      const now = new Date();
-      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      // Metrics are bucketed by UTC date (GHL/Meta syncs), so match on UTC today
+      const today = new Date().toISOString().split("T")[0];
+
 
       const [transferRes, apptRes] = await Promise.all([
         supabase
@@ -39,22 +39,28 @@ export function RecentActivity({ className }: { className?: string }) {
           .order("updated_at", { ascending: false }),
       ]);
 
-      setTransfers(
-        (transferRes.data || []).map((r: any) => ({
-          client_id: r.client_id,
-          client_name: r.clients?.client_name || "Unknown",
-          updated_at: r.updated_at,
-          count: r.live_transfers,
-        }))
-      );
-      setAppointments(
-        (apptRes.data || []).map((r: any) => ({
-          client_id: r.client_id,
-          client_name: r.clients?.client_name || "Unknown",
-          updated_at: r.updated_at,
-          count: r.appointments_booked,
-        }))
-      );
+      const aggregate = (rows: any[], field: string): RecentItem[] => {
+        const map = new Map<string, RecentItem>();
+        for (const r of rows) {
+          const existing = map.get(r.client_id);
+          if (existing) {
+            existing.count += r[field] || 0;
+            if (r.updated_at > existing.updated_at) existing.updated_at = r.updated_at;
+          } else {
+            map.set(r.client_id, {
+              client_id: r.client_id,
+              client_name: r.clients?.client_name || "Unknown",
+              updated_at: r.updated_at,
+              count: r[field] || 0,
+            });
+          }
+        }
+        return [...map.values()].sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
+      };
+
+      setTransfers(aggregate(transferRes.data || [], "live_transfers"));
+      setAppointments(aggregate(apptRes.data || [], "appointments_booked"));
+
       setLoading(false);
     };
     fetchToday();
