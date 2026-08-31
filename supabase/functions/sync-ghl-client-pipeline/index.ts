@@ -222,6 +222,7 @@ async function syncClient(
       .update({
         leads: 0,
         self_booked: 0,
+        sales_team_booked: 0,
         live_transfers: 0,
         appointments_showed: 0,
         deals_closed: 0,
@@ -245,7 +246,8 @@ async function syncClient(
         campaign_id: campaignId,
         date,
         leads: agg.leads,
-        self_booked: agg.booked,
+        self_booked: 0,
+        sales_team_booked: agg.booked,
         live_transfers: agg.transfers,
         appointments_showed: agg.showed,
         deals_closed: agg.deals,
