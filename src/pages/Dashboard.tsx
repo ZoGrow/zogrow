@@ -88,7 +88,7 @@ export default function Dashboard() {
       <AverageMetricsSection avgMetrics={avgMetrics} />
 
       {/* Primary Volume KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <EnhancedKPICard
           title="Total Spend"
           value={formatCurrency(metrics.ad_spend)}
@@ -110,6 +110,15 @@ export default function Dashboard() {
           value={formatNumber(metrics.appointments_booked)}
           rawValue={metrics.appointments_booked}
           previousValue={previousMetrics?.appointments_booked}
+          icon={Calendar}
+          showComparisons={false}
+        />
+        <EnhancedKPICard
+          title="Sales Team Booked"
+          value={formatNumber(metrics.sales_team_booked)}
+          rawValue={metrics.sales_team_booked}
+          previousValue={previousMetrics?.sales_team_booked}
+          subtitle={`${metrics.lead_to_sales_team_booked.toFixed(1)}% of leads`}
           icon={Calendar}
           showComparisons={false}
         />

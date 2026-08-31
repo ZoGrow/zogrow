@@ -14,6 +14,7 @@ interface EnhancedKPICardProps {
   rawValue?: number;
   agencyAvg?: number;
   previousValue?: number;
+  subtitle?: string;
   icon: LucideIcon;
   className?: string;
   showComparisons?: boolean;
@@ -26,6 +27,7 @@ export function EnhancedKPICard({
   rawValue,
   agencyAvg,
   previousValue,
+  subtitle,
   icon: Icon, 
   className,
   showComparisons = true,
@@ -104,7 +106,11 @@ export function EnhancedKPICard({
         </div>
       </div>
       
-      <p className="text-2xl font-bold tracking-tight mb-2">{value}</p>
+      <p className="text-2xl font-bold tracking-tight mb-1">{value}</p>
+      
+      {subtitle && (
+        <p className="text-xs text-muted-foreground mb-2">{subtitle}</p>
+      )}
       
       {showComparisons && (hasPeriodComparison || hasAgencyComparison) && (
         <div className="space-y-1">

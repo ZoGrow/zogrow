@@ -45,6 +45,7 @@ interface CalculatedMetrics {
   cost_per_sales_team_booked: number;
   show_up_rate: number;
   lead_to_appointment_rate: number;
+  lead_to_sales_team_booked: number;
   cac: number;
   close_rate: number;
   roas: number;
@@ -80,6 +81,7 @@ interface AverageMetrics {
   avg_cost_per_sales_team_booked: number;
   avg_show_up_rate: number;
   avg_lead_to_appointment_rate: number;
+  avg_lead_to_sales_team_booked: number;
   avg_cac: number;
   avg_roas: number;
   avg_close_rate: number;
@@ -139,6 +141,7 @@ export const calculateKPIs = (metrics: MetricRecord[]): CalculatedMetrics => {
     cost_per_sales_team_booked: safeDivide(totals.ad_spend, totals.sales_team_booked),
     show_up_rate: safeDivide(totals.appointments_showed, totalBooked) * 100,
     lead_to_appointment_rate: safeDivide(totalBooked, totals.leads) * 100,
+    lead_to_sales_team_booked: safeDivide(totals.sales_team_booked, totals.leads) * 100,
     cac: safeDivide(totals.ad_spend, totals.deals_closed),
     close_rate: safeDivide(totals.deals_closed, totals.leads) * 100,
     roas: safeDivide(totals.revenue, totals.ad_spend),
@@ -278,7 +281,7 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       avg_revenue: 0, avg_ctr: 0, avg_cpc: 0, avg_cpl: 0, avg_cost_per_appointment_booked: 0,
       avg_cost_per_appointment_showed: 0, avg_cost_per_live_transfer: 0, avg_cost_per_self_booked: 0,
       avg_cost_per_sales_team_booked: 0, avg_show_up_rate: 0, avg_lead_to_appointment_rate: 0,
-      avg_cac: 0, avg_roas: 0, avg_close_rate: 0, client_count: 0,
+      avg_lead_to_sales_team_booked: 0, avg_cac: 0, avg_roas: 0, avg_close_rate: 0, client_count: 0,
     };
     if (count === 0) return empty;
 
@@ -307,6 +310,7 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
       avg_cost_per_sales_team_booked: totals.cost_per_sales_team_booked,
       avg_show_up_rate: totals.show_up_rate,
       avg_lead_to_appointment_rate: totals.lead_to_appointment_rate,
+      avg_lead_to_sales_team_booked: totals.lead_to_sales_team_booked,
       avg_cac: totals.cac,
       avg_roas: totals.roas,
       avg_close_rate: totals.close_rate,
