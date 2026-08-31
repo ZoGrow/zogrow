@@ -166,7 +166,9 @@ async function syncClient(
       continue;
     }
     if (stage === "disqualified") {
-      skipped++;
+      // Disqualified opportunities still count as leads (they came in), but
+      // contribute nothing else to the funnel.
+      get(createdDate || changedDate).leads++;
       continue;
     }
 
