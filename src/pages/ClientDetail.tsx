@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { subDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -231,9 +231,22 @@ export default function ClientDetail() {
     }
     setIsSyncingGhl(false);
   };
-
-
-
+  // Silent background GHL sync so the dashboard reflects live opportunity data
+  const lastAutoSync = useRef<number>(0);
+  const autoSyncGhl = useCallback(async () => {
+    if (!client) return;
+    const now = Date.now();
+    if (now - lastAutoSync.current < 5 * 60 * 1000) return;
+    lastAutoSync.current = now;
+    try {
+      await supabase.functions.invoke("sync-ghl-client-pipeline", {
+        body: { action: "sync", clientId: client.id },
+      });
+      void fetchData();
+    } catch {
+      // background sync — stay silent
+    }
+  }, [client, fetchData]);
 
   useEffect(() => {
     void fetchData();
@@ -242,6 +255,7 @@ export default function ClientDetail() {
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") {
         void fetchData();
+        void autoSyncGhl();
       }
     };
 
@@ -252,7 +266,12 @@ export default function ClientDetail() {
       window.removeEventListener("focus", refreshWhenVisible);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
-  }, [fetchData]);
+  }, [fetchData, autoSyncGhl]);
+
+  useEffect(() => {
+    if (client) void autoSyncGhl();
+  }, [client, autoSyncGhl]);
+
 
   const metrics = useMemo(() => {
     const totals = metricsData.reduce(
