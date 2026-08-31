@@ -173,11 +173,15 @@ async function syncClient(
     }
 
     get(createdDate || changedDate).leads++;
+    // Transfers / appointments are dated by when the opportunity entered that
+    // stage (lastStageChangeAt), not by when the lead first came in — this is
+    // how GHL reports them, and keeps monthly totals aligned with the CRM.
     if (LIVE_TRANSFER_STAGES.includes(stage)) {
-      get(createdDate || changedDate).transfers++;
+      get(changedDate || createdDate).transfers++;
     } else if (SELF_BOOKED_STAGES.includes(stage)) {
-      get(createdDate || changedDate).booked++;
+      get(changedDate || createdDate).booked++;
     }
+
     if (SHOWED_STAGES.includes(stage)) get(changedDate).showed++;
     if (CLOSED_STAGES.includes(stage)) {
       const agg = get(changedDate);
