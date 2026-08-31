@@ -22,6 +22,8 @@ interface ClientWithMetrics {
   ad_spend: number;
   leads: number;
   appointments_booked: number;
+  sales_team_booked: number;
+  lead_to_sales_team_booked: number;
   show_up_rate: number;
   deals_closed: number;
   cac: number;
@@ -68,6 +70,7 @@ export function ClientsTable({ data, agencyAvg }: ClientsTableProps) {
             <TableHead className="text-muted-foreground font-medium text-right">Spend</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Leads</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Appts Booked</TableHead>
+            <TableHead className="text-muted-foreground font-medium text-right">Sales Team Booked</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Show-Up Rate</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Deals</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Cost/Deal</TableHead>
@@ -104,6 +107,10 @@ export function ClientsTable({ data, agencyAvg }: ClientsTableProps) {
               </TableCell>
               <TableCell className="text-right">{client.leads.toLocaleString()}</TableCell>
               <TableCell className="text-right">{client.appointments_booked.toLocaleString()}</TableCell>
+              <TableCell className="text-right">
+                <div className="font-medium">{client.sales_team_booked.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground">{client.lead_to_sales_team_booked.toFixed(1)}% of leads</div>
+              </TableCell>
               <TableCell className="text-right">
                 <span className={cn(
                   agencyAvg && statusColors[getKPIStatus(client.show_up_rate, agencyAvg.avg_show_up_rate, 'show_up_rate')]
