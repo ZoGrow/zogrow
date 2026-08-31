@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { subDays } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
 import {
   DollarSign,
   Eye,
