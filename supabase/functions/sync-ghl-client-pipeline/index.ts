@@ -158,6 +158,12 @@ async function syncClient(
 
   let skipped = 0;
   for (const o of opps) {
+    // Blank placeholder opportunities (no contact name at all) are CRM junk, not leads.
+    const oppName = ((o as { name?: string }).name || "").trim();
+    if (!oppName) {
+      skipped++;
+      continue;
+    }
     const stage = (stageMap.get(o.pipelineStageId) || "").toLowerCase().trim();
     const createdDate = (o.createdAt || o.updatedAt || "").slice(0, 10);
     const changedDate = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
@@ -165,6 +171,7 @@ async function syncClient(
       skipped++;
       continue;
     }
+
     if (stage === "disqualified") {
       // Disqualified opportunities still count as leads (they came in), but
       // contribute nothing else to the funnel.
@@ -329,7 +336,41 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "opps") {
+      const results = [];
+      for (const i of integrations || []) {
+        const token = (i.ghl_api_key as string | null)?.trim();
+        const loc = (i.ghl_location_id as string | null)?.trim();
+        if (!token || !loc) continue;
+        const pj = await ghlFetch(`/opportunities/pipelines?locationId=${loc}`, token);
+        const pipelines = (pj.pipelines || []) as Array<{ id: string; name: string; stages?: StageInfo[] }>;
+        const pipeline =
+          (i.ghl_pipeline_id && pipelines.find((p) => p.id === i.ghl_pipeline_id)) || pipelines[0];
+        if (!pipeline) continue;
+        const stageMap = new Map<string, string>();
+        for (const s of pipeline.stages || []) stageMap.set(s.id, s.name);
+        const opps = await fetchAllOpportunities(token, loc, pipeline.id);
+        results.push({
+          client_id: i.client_id,
+          pipeline: pipeline.name,
+          opportunities: opps.map((o) => ({
+            name: (o as { name?: string }).name,
+            stage: stageMap.get(o.pipelineStageId) || "unknown",
+            createdAt: o.createdAt,
+            lastStageChangeAt: o.lastStageChangeAt,
+            status: (o as { status?: string }).status,
+            source: (o as { source?: string }).source,
+          })),
+        });
+      }
+      return new Response(JSON.stringify({ results }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "debug") {
+
       const month: string | undefined = body.month; // "YYYY-MM"
       const results = [];
       for (const i of integrations || []) {
