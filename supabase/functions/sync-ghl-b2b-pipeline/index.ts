@@ -30,6 +30,21 @@ function ghlHeaders(token: string) {
   };
 }
 
+// Bucket timestamps by the agency's local day (America/Chicago), not UTC,
+// so evening activity doesn't spill into the next day's numbers.
+const DAY_FMT = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Chicago",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+function localDay(ts?: string): string {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return "";
+  return DAY_FMT.format(d);
+}
+
 async function ghlFetch(path: string, token: string, init?: RequestInit) {
   const res = await fetch(`${GHL_BASE}${path}`, {
     ...init,
