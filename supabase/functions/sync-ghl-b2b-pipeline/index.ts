@@ -257,8 +257,8 @@ Deno.serve(async (req) => {
     let skipped = 0;
     for (const o of opps) {
       const stage = (stageMap.get(o.pipelineStageId) || "").toLowerCase().trim();
-      const createdDate = (o.createdAt || o.updatedAt || "").slice(0, 10);
-      const changedDate = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
+      const createdDate = localDay(o.createdAt || o.updatedAt);
+      const changedDate = localDay(o.lastStageChangeAt || o.updatedAt || o.createdAt);
       if (!createdDate && !changedDate) {
         skipped++;
         continue;
@@ -281,9 +281,11 @@ Deno.serve(async (req) => {
         get(createdDate || changedDate).appointments++;
         counted = true;
       }
-      // Demo showed — follow up / dormant / contract sent / deal lost / sold
+      // Demo showed — follow up / dormant / contract sent / deal lost / sold.
+      // Dated by the booking (creation) date so the show rate lines up with the
+      // month the demo was booked in, regardless of when the stage was moved.
       if (DEMO_SHOWED_STAGES.includes(stage)) {
-        get(changedDate).demos_showed++;
+        get(createdDate || changedDate).demos_showed++;
         counted = true;
       }
       // Closed won
