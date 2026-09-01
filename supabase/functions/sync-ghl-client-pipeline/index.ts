@@ -158,6 +158,12 @@ async function syncClient(
 
   let skipped = 0;
   for (const o of opps) {
+    // Blank placeholder opportunities (no contact name at all) are CRM junk, not leads.
+    const oppName = ((o as { name?: string }).name || "").trim();
+    if (!oppName) {
+      skipped++;
+      continue;
+    }
     const stage = (stageMap.get(o.pipelineStageId) || "").toLowerCase().trim();
     const createdDate = (o.createdAt || o.updatedAt || "").slice(0, 10);
     const changedDate = (o.lastStageChangeAt || o.updatedAt || o.createdAt || "").slice(0, 10);
@@ -165,6 +171,7 @@ async function syncClient(
       skipped++;
       continue;
     }
+
     if (stage === "disqualified") {
       // Disqualified opportunities still count as leads (they came in), but
       // contribute nothing else to the funnel.
