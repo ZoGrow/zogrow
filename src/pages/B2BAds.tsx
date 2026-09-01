@@ -152,10 +152,14 @@ export default function B2BAds() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [syncingGhl, setSyncingGhl] = useState(false);
+  // GHL rows are bucketed by UTC date, so anchor the default month on UTC "today"
+  // (otherwise today's opportunities fall outside the range in western timezones).
+  const utcToday = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00`);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: startOfMonth(new Date()),
-    to: endOfMonth(new Date()),
+    from: startOfMonth(utcToday),
+    to: endOfMonth(utcToday),
   });
+
 
   const fetchMetrics = async () => {
     setLoading(true);
