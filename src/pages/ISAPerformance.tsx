@@ -384,10 +384,10 @@ export default function ISAPerformance() {
               <SelectItem value="all">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  All ISAs ({isaUsers.length})
+                  All ISAs ({isaOptions.length})
                 </div>
               </SelectItem>
-              {isaUsers.map((isa) => {
+              {isaOptions.map((isa) => {
                 const summary = isaSummaries.find(s => s.name === isa.name);
                 return (
                   <SelectItem key={isa.name} value={isa.name}>
