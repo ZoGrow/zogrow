@@ -312,6 +312,38 @@ export default function ISAPerformance() {
   const apptToContractRate = totals.showed > 0 ? (totals.contracts / totals.showed) * 100 : 0;
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
 
+  // ----- Dialer call log stats (HotProspector) -----
+  const callStats = useMemo(() => {
+    const relevant = callLogs;
+    const totalTalkSeconds = relevant.reduce((s, c) => s + (c.duration_seconds || 0), 0);
+    const connected = relevant.filter((c) => (c.duration_seconds || 0) > 0);
+    const dispositions = new Map<string, number>();
+    relevant.forEach((c) => {
+      const label = (c.disposition || c.call_status || "Unknown").trim();
+      dispositions.set(label, (dispositions.get(label) || 0) + 1);
+    });
+    return {
+      totalCalls: relevant.length,
+      totalTalkSeconds,
+      avgTalkSeconds: connected.length > 0 ? totalTalkSeconds / connected.length : 0,
+      dispositions: Array.from(dispositions.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((a, b) => b.count - a.count),
+    };
+  }, [callLogs]);
+
+  const formatDuration = (seconds: number) => {
+    const s = Math.round(seconds);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m ${sec}s`;
+    return `${sec}s`;
+  };
+
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
