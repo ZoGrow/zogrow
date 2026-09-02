@@ -47,6 +47,7 @@ interface CalculatedMetrics {
   lead_to_appointment_rate: number;
   lead_to_sales_team_booked: number;
   cac: number;
+  aov: number;
   close_rate: number;
   roas: number;
 }
