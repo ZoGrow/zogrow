@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { subDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target, Phone, PhoneCall, CalendarDays, Clock } from "lucide-react";
+import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Phone, PhoneCall, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { KPICard } from "@/components/dashboard/KPICard";
