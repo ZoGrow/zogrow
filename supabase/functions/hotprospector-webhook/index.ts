@@ -104,6 +104,29 @@ const NON_PICKUP_KEYWORDS = [
   "cancel",
 ];
 
+// Parse "YYYY-MM-DD HH:mm:ss" as wall-clock time in the given IANA zone (default America/Chicago)
+function parseZonedTimestamp(raw: string, timeZone: string): Date {
+  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return new Date(raw);
+  const [, y, mo, d, h, mi, s] = m;
+  // Guess: treat wall clock as UTC, then shift by the zone's offset at that instant
+  const guess = Date.UTC(+y, +mo - 1, +d, +h, +mi, +(s || 0));
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date(guess));
+    const get = (t: string) => +(parts.find((p) => p.type === t)?.value || 0);
+    const wallAsUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour") % 24, get("minute"), get("second"));
+    const offsetMs = wallAsUtc - guess;
+    return new Date(guess - offsetMs);
+  } catch {
+    return new Date(raw);
+  }
+}
+
 function isPickup(disposition: string | null, status: string | null, durationSeconds: number): boolean {
   const text = `${disposition || ""} ${status || ""}`.toLowerCase().trim();
   if (text) {
