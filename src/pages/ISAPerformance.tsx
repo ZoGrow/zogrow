@@ -503,11 +503,14 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Leads</TableHead>
                   <TableHead className="text-muted-foreground text-right">Pickup Rate / Lead</TableHead>
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {dailyStats.map((d) => {
                   const rate = d.leads > 0 ? (d.pickups / d.leads) * 100 : 0;
+                  const pickupToTotal = d.pickups > 0 ? ((d.showed + d.booked) / d.pickups) * 100 : 0;
                   return (
                     <TableRow key={d.date} className="border-border">
                       <TableCell className="font-medium">
@@ -525,6 +528,15 @@ export default function ISAPerformance() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">{d.booked}</TableCell>
+                      <TableCell className="text-right text-success">{d.showed}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          variant={pickupToTotal >= 45 ? "default" : "secondary"}
+                          className={pickupToTotal >= 45 ? "bg-success/10 text-success border-success/20" : ""}
+                        >
+                          {pickupToTotal.toFixed(1)}%
+                        </Badge>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
