@@ -231,7 +231,7 @@ export default function SalesDashboard() {
           </Card>
           <Card className="glass-card">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Live Transfers</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Appointments Showed</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{b2bMetrics.appointments_showed}</div>

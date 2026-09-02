@@ -159,7 +159,7 @@ export default function Dashboard() {
           showComparisons={false}
         />
         <EnhancedKPICard
-          title="Live Transfers"
+          title="Appointments Showed"
           value={formatNumber(metrics.appointments_showed)}
           rawValue={metrics.appointments_showed}
           previousValue={previousMetrics?.appointments_showed}
