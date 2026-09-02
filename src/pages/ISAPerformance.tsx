@@ -324,6 +324,24 @@ export default function ISAPerformance() {
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
 
   // ----- Dialer call log stats (HotProspector) -----
+  // Unique leads actually dialed (distinct phone numbers), filtered by selected ISA
+  const uniqueLeadsCalled = useMemo(() => {
+    const relevant = selectedISA === "all"
+      ? callLogs
+      : callLogs.filter((c) => c.agent_name === selectedISA);
+    const phones = new Set<string>();
+    relevant.forEach((c) => {
+      const p = (c.contact_phone || "").replace(/\D/g, "");
+      if (p) phones.add(p);
+    });
+    return phones.size;
+  }, [callLogs, selectedISA]);
+
+  // Contact Rate = pickups ÷ unique leads called (repeat attempts don't count twice)
+  const contactRate = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
+  // List Coverage = unique leads called ÷ total leads (is the list being worked?)
+  const listCoverage = totals.leads > 0 ? (uniqueLeadsCalled / totals.leads) * 100 : 0;
+
   const callStats = useMemo(() => {
     const relevant = callLogs;
     const totalTalkSeconds = relevant.reduce((s, c) => s + (c.duration_seconds || 0), 0);
