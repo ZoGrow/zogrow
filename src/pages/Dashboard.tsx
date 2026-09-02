@@ -224,15 +224,6 @@ export default function Dashboard() {
           metricKey="cac"
           icon={DollarSign}
         />
-        <EnhancedKPICard
-          title="AOV (Revenue / Deal)"
-          value={formatCurrency(metrics.aov)}
-          rawValue={metrics.aov}
-          previousValue={previousMetrics?.aov}
-          agencyAvg={avgMetrics.avg_aov}
-          metricKey="aov"
-          icon={DollarSign}
-        />
       </div>
 
       {/* Trend Charts */}
