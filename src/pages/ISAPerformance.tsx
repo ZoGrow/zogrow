@@ -492,8 +492,6 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
                   <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
                   <TableHead className="text-muted-foreground text-right">Lead→Appt</TableHead>
-                  <TableHead className="text-muted-foreground text-right">Live Transfer Rate</TableHead>
-                  <TableHead className="text-muted-foreground text-right">Contracts</TableHead>
                   <TableHead className="text-muted-foreground text-right">Deals</TableHead>
                 </TableRow>
               </TableHeader>
@@ -527,15 +525,6 @@ export default function ISAPerformance() {
                         {client.leadToApptRate.toFixed(1)}%
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Badge 
-                        variant={client.showUpRate >= 60 ? "default" : "secondary"}
-                        className={client.showUpRate >= 60 ? "bg-success/10 text-success border-success/20" : ""}
-                      >
-                        {client.showUpRate.toFixed(1)}%
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">{client.contracts}</TableCell>
                     <TableCell className="text-right">{client.deals}</TableCell>
                   </TableRow>
                 ))}
@@ -553,10 +542,6 @@ export default function ISAPerformance() {
                   <TableCell className="text-right">
                     <Badge variant="default">{leadToApptRate.toFixed(1)}%</Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="default">{showUpRate.toFixed(1)}%</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">{totals.contracts}</TableCell>
                   <TableCell className="text-right">{totals.deals}</TableCell>
                 </TableRow>
               </TableBody>
