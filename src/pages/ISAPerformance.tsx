@@ -54,6 +54,10 @@ interface ISAClientStats {
   deals: number;
   contracts: number;
   leadToApptRate: number;
+  leadToLiveTransferRate: number;
+  pickupToLiveTransferRate: number;
+  pickupToAppointmentRate: number;
+  pickupToTotalRate: number;
   showUpRate: number;
 }
 
