@@ -42,6 +42,16 @@ interface Client {
   client_name: string;
 }
 
+interface CallLog {
+  id: string;
+  client_id: string;
+  agent_name: string | null;
+  disposition: string | null;
+  call_status: string | null;
+  duration_seconds: number | null;
+  dialed_at: string;
+}
+
 interface ISAClientStats {
   clientId: string;
   clientName: string;
@@ -78,6 +88,7 @@ export default function ISAPerformance() {
     to: new Date(),
   });
   const [metrics, setMetrics] = useState<MetricRow[]>([]);
+  const [callLogs, setCallLogs] = useState<CallLog[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isaUsers, setIsaUsers] = useState<{ name: string }[]>([]);
   const [loading, setLoading] = useState(true);
