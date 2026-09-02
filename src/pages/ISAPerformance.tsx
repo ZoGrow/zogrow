@@ -135,13 +135,20 @@ export default function ISAPerformance() {
         ? format(dateRange.to, "yyyy-MM-dd") 
         : format(new Date(), "yyyy-MM-dd");
 
-      const [metricsRes, clientsRes] = await Promise.all([
+      const [metricsRes, clientsRes, callsRes] = await Promise.all([
         supabase
           .from("metrics")
           .select("id, client_id, setter, leads, dials_made, pickups, appointments_booked, appointments_showed, deals_closed, contracts_signed, date")
           .gte("date", fromDate)
           .lte("date", toDate),
         supabase.from("clients").select("id, client_name"),
+        supabase
+          .from("dial_logs")
+          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at")
+          .gte("dialed_at", `${fromDate}T00:00:00`)
+          .lte("dialed_at", `${toDate}T23:59:59`)
+          .order("dialed_at", { ascending: false })
+          .limit(5000),
       ]);
 
       if (!metricsRes.error) {
@@ -149,6 +156,9 @@ export default function ISAPerformance() {
       }
       if (!clientsRes.error) {
         setClients(clientsRes.data || []);
+      }
+      if (!callsRes.error) {
+        setCallLogs((callsRes.data as CallLog[]) || []);
       }
       setLoading(false);
     };
