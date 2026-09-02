@@ -453,6 +453,27 @@ export default function ISAPerformance() {
           variant={pickupRatePerLead >= 60 ? "success" : "warning"}
         />
         <KPICard
+          title="Unique Leads Called"
+          value={uniqueLeadsCalled.toLocaleString()}
+          subtitle="Distinct contacts dialed (from dialer)"
+          icon={PhoneCall}
+          variant="primary"
+        />
+        <KPICard
+          title="Contact Rate"
+          value={`${contactRate.toFixed(1)}%`}
+          subtitle={`${totals.pickups} pickups / ${uniqueLeadsCalled} unique leads called`}
+          icon={Percent}
+          variant={contactRate >= 20 ? "success" : "warning"}
+        />
+        <KPICard
+          title="List Coverage"
+          value={`${listCoverage.toFixed(1)}%`}
+          subtitle={`${uniqueLeadsCalled} unique called / ${totals.leads} leads`}
+          icon={Target}
+          variant={listCoverage >= 80 ? "success" : "warning"}
+        />
+        <KPICard
           title="Appts Booked"
           value={totals.booked.toLocaleString()}
           icon={Calendar}
