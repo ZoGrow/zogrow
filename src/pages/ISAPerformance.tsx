@@ -54,6 +54,10 @@ interface ISAClientStats {
   deals: number;
   contracts: number;
   leadToApptRate: number;
+  leadToLiveTransferRate: number;
+  pickupToLiveTransferRate: number;
+  pickupToAppointmentRate: number;
+  pickupToTotalRate: number;
   showUpRate: number;
 }
 
@@ -201,6 +205,10 @@ export default function ISAPerformance() {
         deals: stats.deals,
         contracts: stats.contracts,
         leadToApptRate: stats.leads > 0 ? (stats.booked / stats.leads) * 100 : 0,
+        leadToLiveTransferRate: stats.leads > 0 ? (stats.showed / stats.leads) * 100 : 0,
+        pickupToLiveTransferRate: stats.pickups > 0 ? (stats.showed / stats.pickups) * 100 : 0,
+        pickupToAppointmentRate: stats.pickups > 0 ? (stats.booked / stats.pickups) * 100 : 0,
+        pickupToTotalRate: stats.pickups > 0 ? ((stats.showed + stats.booked) / stats.pickups) * 100 : 0,
         showUpRate: stats.booked > 0 ? (stats.showed / stats.booked) * 100 : 0,
       });
     });
@@ -259,13 +267,14 @@ export default function ISAPerformance() {
 
   // Daily breakdown of dials / pickups
   const dailyStats = useMemo(() => {
-    const map = new Map<string, { date: string; dials: number; pickups: number; leads: number; booked: number }>();
+    const map = new Map<string, { date: string; dials: number; pickups: number; leads: number; booked: number; showed: number }>();
     filteredMetrics.forEach((m) => {
-      const cur = map.get(m.date) || { date: m.date, dials: 0, pickups: 0, leads: 0, booked: 0 };
+      const cur = map.get(m.date) || { date: m.date, dials: 0, pickups: 0, leads: 0, booked: 0, showed: 0 };
       cur.dials += m.dials_made || 0;
       cur.pickups += m.pickups || 0;
       cur.leads += m.leads || 0;
       cur.booked += m.appointments_booked || 0;
+      cur.showed += m.appointments_showed || 0;
       map.set(m.date, cur);
     });
     return Array.from(map.values())
@@ -274,6 +283,10 @@ export default function ISAPerformance() {
   }, [filteredMetrics]);
 
   const leadToApptRate = totals.leads > 0 ? (totals.booked / totals.leads) * 100 : 0;
+  const leadToLiveTransferRate = totals.leads > 0 ? (totals.showed / totals.leads) * 100 : 0;
+  const pickupToLiveTransferRate = totals.pickups > 0 ? (totals.showed / totals.pickups) * 100 : 0;
+  const pickupToAppointmentRate = totals.pickups > 0 ? (totals.booked / totals.pickups) * 100 : 0;
+  const pickupToTotalRate = totals.pickups > 0 ? ((totals.showed + totals.booked) / totals.pickups) * 100 : 0;
   const showUpRate = totals.booked > 0 ? (totals.showed / totals.booked) * 100 : 0;
   const apptToContractRate = totals.showed > 0 ? (totals.contracts / totals.showed) * 100 : 0;
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
@@ -375,10 +388,38 @@ export default function ISAPerformance() {
           icon={TrendingUp}
           variant={leadToApptRate >= 30 ? "success" : "warning"}
         />
+        <KPICard
+          title="Lead → Live Transfer Rate"
+          value={`${leadToLiveTransferRate.toFixed(1)}%`}
+          subtitle={`${totals.showed} transfers / ${totals.leads} leads`}
+          icon={TrendingUp}
+          variant={leadToLiveTransferRate >= 10 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Live Transfer"
+          value={`${pickupToLiveTransferRate.toFixed(1)}%`}
+          subtitle={`${totals.showed} transfers / ${totals.pickups} pickups`}
+          icon={PhoneCall}
+          variant={pickupToLiveTransferRate >= 15 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Appt Rate"
+          value={`${pickupToAppointmentRate.toFixed(1)}%`}
+          subtitle={`${totals.booked} booked / ${totals.pickups} pickups`}
+          icon={Calendar}
+          variant={pickupToAppointmentRate >= 30 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Total Rate"
+          value={`${pickupToTotalRate.toFixed(1)}%`}
+          subtitle={`${totals.showed + totals.booked} outcomes / ${totals.pickups} pickups`}
+          icon={Percent}
+          variant={pickupToTotalRate >= 45 ? "success" : "warning"}
+        />
       </div>
 
       {/* Conversion Rates */}
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="glass-card">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -389,6 +430,42 @@ export default function ISAPerformance() {
           </CardContent>
         </Card>
         <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-primary">{leadToLiveTransferRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Lead → Live Transfer</p>
+              <p className="text-xs text-muted-foreground">{totals.leads} leads → {totals.showed} transfers</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold">{pickupToLiveTransferRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Live Transfer</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.showed} transfers</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold">{pickupToAppointmentRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Appt Booked</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.booked} booked</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card md:col-span-2">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-success">{pickupToTotalRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Total Outcomes</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.showed + totals.booked} outcomes</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card md:col-span-2">
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{totals.deals}</p>
@@ -426,11 +503,14 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Leads</TableHead>
                   <TableHead className="text-muted-foreground text-right">Pickup Rate / Lead</TableHead>
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {dailyStats.map((d) => {
                   const rate = d.leads > 0 ? (d.pickups / d.leads) * 100 : 0;
+                  const pickupToTotal = d.pickups > 0 ? ((d.showed + d.booked) / d.pickups) * 100 : 0;
                   return (
                     <TableRow key={d.date} className="border-border">
                       <TableCell className="font-medium">
@@ -448,6 +528,15 @@ export default function ISAPerformance() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">{d.booked}</TableCell>
+                      <TableCell className="text-right text-success">{d.showed}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          variant={pickupToTotal >= 45 ? "default" : "secondary"}
+                          className={pickupToTotal >= 45 ? "bg-success/10 text-success border-success/20" : ""}
+                        >
+                          {pickupToTotal.toFixed(1)}%
+                        </Badge>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -492,6 +581,10 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
                   <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
                   <TableHead className="text-muted-foreground text-right">Lead→Appt</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Lead→LT</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→LT</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Appt</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Total</TableHead>
                   <TableHead className="text-muted-foreground text-right">Deals</TableHead>
                 </TableRow>
               </TableHeader>
@@ -525,6 +618,38 @@ export default function ISAPerformance() {
                         {client.leadToApptRate.toFixed(1)}%
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.leadToLiveTransferRate >= 10 ? "default" : "secondary"}
+                        className={client.leadToLiveTransferRate >= 10 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.leadToLiveTransferRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToLiveTransferRate >= 15 ? "default" : "secondary"}
+                        className={client.pickupToLiveTransferRate >= 15 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToLiveTransferRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToAppointmentRate >= 30 ? "default" : "secondary"}
+                        className={client.pickupToAppointmentRate >= 30 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToAppointmentRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToTotalRate >= 45 ? "default" : "secondary"}
+                        className={client.pickupToTotalRate >= 45 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToTotalRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">{client.deals}</TableCell>
                   </TableRow>
                 ))}
@@ -541,6 +666,18 @@ export default function ISAPerformance() {
                   <TableCell className="text-right text-success">{totals.showed}</TableCell>
                   <TableCell className="text-right">
                     <Badge variant="default">{leadToApptRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{leadToLiveTransferRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToLiveTransferRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToAppointmentRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToTotalRate.toFixed(1)}%</Badge>
                   </TableCell>
                   <TableCell className="text-right">{totals.deals}</TableCell>
                 </TableRow>
