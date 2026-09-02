@@ -27,6 +27,7 @@ interface ClientWithMetrics {
   show_up_rate: number;
   deals_closed: number;
   cac: number;
+  aov: number;
   roas: number;
   cpl: number;
 }
@@ -34,6 +35,7 @@ interface ClientWithMetrics {
 interface AgencyAvg {
   avg_show_up_rate: number;
   avg_cac: number;
+  avg_aov: number;
   avg_roas: number;
   avg_cpl: number;
 }
@@ -74,6 +76,7 @@ export function ClientsTable({ data, agencyAvg }: ClientsTableProps) {
             <TableHead className="text-muted-foreground font-medium text-right">Show-Up Rate</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Deals</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">Cost/Deal</TableHead>
+            <TableHead className="text-muted-foreground font-medium text-right">AOV</TableHead>
             <TableHead className="text-muted-foreground font-medium text-right">ROAS</TableHead>
           </TableRow>
         </TableHeader>
@@ -124,6 +127,13 @@ export function ClientsTable({ data, agencyAvg }: ClientsTableProps) {
                   agencyAvg && statusColors[getKPIStatus(client.cac, agencyAvg.avg_cac, 'cac')]
                 )}>
                   {client.cac > 0 ? formatCurrency(client.cac) : 'N/A'}
+                </span>
+              </TableCell>
+              <TableCell className="text-right font-medium">
+                <span className={cn(
+                  agencyAvg && statusColors[getKPIStatus(client.aov, agencyAvg.avg_aov, 'aov')]
+                )}>
+                  {client.aov > 0 ? formatCurrency(client.aov) : 'N/A'}
                 </span>
               </TableCell>
               <TableCell className="text-right">

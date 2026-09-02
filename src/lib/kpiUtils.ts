@@ -208,6 +208,10 @@ export const metricTooltips: Record<string, { description: string; benchmark: st
     description: 'Customer Acquisition Cost - Total ad spend divided by deals closed.',
     benchmark: 'Target: $2,000-5,000 per closed deal',
   },
+  aov: {
+    description: 'Average Order Value - Total revenue divided by deals closed.',
+    benchmark: 'Revenue per closed deal',
+  },
   roas: {
     description: 'Return On Ad Spend - Revenue generated divided by ad spend.',
     benchmark: 'Target: 3x or higher',
