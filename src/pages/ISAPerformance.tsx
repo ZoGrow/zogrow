@@ -282,6 +282,10 @@ export default function ISAPerformance() {
   }, [filteredMetrics]);
 
   const leadToApptRate = totals.leads > 0 ? (totals.booked / totals.leads) * 100 : 0;
+  const leadToLiveTransferRate = totals.leads > 0 ? (totals.showed / totals.leads) * 100 : 0;
+  const pickupToLiveTransferRate = totals.pickups > 0 ? (totals.showed / totals.pickups) * 100 : 0;
+  const pickupToAppointmentRate = totals.pickups > 0 ? (totals.booked / totals.pickups) * 100 : 0;
+  const pickupToTotalRate = totals.pickups > 0 ? ((totals.showed + totals.booked) / totals.pickups) * 100 : 0;
   const showUpRate = totals.booked > 0 ? (totals.showed / totals.booked) * 100 : 0;
   const apptToContractRate = totals.showed > 0 ? (totals.contracts / totals.showed) * 100 : 0;
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
