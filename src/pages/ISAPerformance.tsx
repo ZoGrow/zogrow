@@ -82,6 +82,9 @@ interface ISASummary {
   totalContracts: number;
 }
 
+// ISAs who don't have app accounts yet still appear in the dropdown
+const DEFAULT_ISA_NAMES = ["Christian Mendiola"];
+
 export default function ISAPerformance() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
@@ -178,6 +181,13 @@ export default function ISAPerformance() {
     });
     return Array.from(names).sort();
   }, [metrics]);
+
+  // Merge account-based ISAs with the default list for the dropdown
+  const isaOptions = useMemo(() => {
+    const names = new Set<string>(DEFAULT_ISA_NAMES);
+    isaUsers.forEach(u => names.add(u.name));
+    return Array.from(names).sort().map(name => ({ name }));
+  }, [isaUsers]);
 
   // Filter metrics by selected ISA
   const filteredMetrics = useMemo(() => {
@@ -374,10 +384,10 @@ export default function ISAPerformance() {
               <SelectItem value="all">
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  All ISAs ({isaUsers.length})
+                  All ISAs ({isaOptions.length})
                 </div>
               </SelectItem>
-              {isaUsers.map((isa) => {
+              {isaOptions.map((isa) => {
                 const summary = isaSummaries.find(s => s.name === isa.name);
                 return (
                   <SelectItem key={isa.name} value={isa.name}>
