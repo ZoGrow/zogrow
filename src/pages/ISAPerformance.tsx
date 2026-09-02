@@ -267,13 +267,14 @@ export default function ISAPerformance() {
 
   // Daily breakdown of dials / pickups
   const dailyStats = useMemo(() => {
-    const map = new Map<string, { date: string; dials: number; pickups: number; leads: number; booked: number }>();
+    const map = new Map<string, { date: string; dials: number; pickups: number; leads: number; booked: number; showed: number }>();
     filteredMetrics.forEach((m) => {
-      const cur = map.get(m.date) || { date: m.date, dials: 0, pickups: 0, leads: 0, booked: 0 };
+      const cur = map.get(m.date) || { date: m.date, dials: 0, pickups: 0, leads: 0, booked: 0, showed: 0 };
       cur.dials += m.dials_made || 0;
       cur.pickups += m.pickups || 0;
       cur.leads += m.leads || 0;
       cur.booked += m.appointments_booked || 0;
+      cur.showed += m.appointments_showed || 0;
       map.set(m.date, cur);
     });
     return Array.from(map.values())
