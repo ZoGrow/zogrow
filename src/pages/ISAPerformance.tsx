@@ -654,6 +654,18 @@ export default function ISAPerformance() {
                   <TableCell className="text-right">
                     <Badge variant="default">{leadToApptRate.toFixed(1)}%</Badge>
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{leadToLiveTransferRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToLiveTransferRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToAppointmentRate.toFixed(1)}%</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupToTotalRate.toFixed(1)}%</Badge>
+                  </TableCell>
                   <TableCell className="text-right">{totals.deals}</TableCell>
                 </TableRow>
               </TableBody>
