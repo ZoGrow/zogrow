@@ -183,16 +183,21 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const externalEventId = firstOf(ev, [
+      let externalEventId = firstOf(ev, [
         "call_id",
         "callId",
         "unique_id",
         "uniqueid",
         "event_id",
-        "id",
         "call_uuid",
         "recording_id",
       ]);
+      if (!externalEventId) {
+        // HP has no unique call id — build one from lead/contact + call time
+        const leadRef = firstOf(ev, ["leadId", "lead_id", "contactId", "contact_id", "id"]);
+        const timeRef = firstOf(ev, ["call_time", "call_date", "timestamp"]);
+        if (leadRef && timeRef) externalEventId = `hp-${leadRef}-${timeRef}`;
+      }
       const dialedAtRaw = firstOf(ev, [
         "call_time",
         "call_date",
