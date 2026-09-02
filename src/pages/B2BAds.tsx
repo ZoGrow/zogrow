@@ -384,6 +384,7 @@ export default function B2BAds() {
       costPerQualifiedShown: safeDivide(totals.ad_spend, totals.qualified_showed),
       costPerQualifiedIntroShowed: safeDivide(totals.ad_spend, totals.qualified_intro_showed),
       cac: safeDivide(totals.ad_spend, totals.deals_closed),
+      aov: safeDivide(totals.revenue, totals.deals_closed),
       roas: safeDivide(totals.revenue, totals.ad_spend),
     };
   }, [totals]);
@@ -626,6 +627,12 @@ export default function B2BAds() {
         <KPICard
           title="CAC (Cost / Deal)"
           value={formatCurrency(kpis.cac)}
+          icon={DollarSign}
+          variant="green"
+        />
+        <KPICard
+          title="AOV (Revenue / Deal)"
+          value={formatCurrency(kpis.aov)}
           icon={DollarSign}
           variant="green"
         />
