@@ -875,7 +875,6 @@ export default function B2BAds() {
                     <TableHead className="text-right">Qualified</TableHead>
                     <TableHead className="text-right">Qual. Intro</TableHead>
                     <TableHead className="text-right">Deals</TableHead>
-                    <TableHead className="text-right">Cash</TableHead>
                     <TableHead className="text-right">Revenue</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -896,7 +895,6 @@ export default function B2BAds() {
                       <TableCell className="text-right">{metric.qualified_showed || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).qualified_intro_showed || 0}</TableCell>
                       <TableCell className="text-right">{metric.deals_closed || 0}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(metric.cash_collected || 0)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(metric.revenue || 0)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -931,7 +929,6 @@ export default function B2BAds() {
                     <TableCell className="text-right">{totals.qualified_showed}</TableCell>
                     <TableCell className="text-right">{totals.qualified_intro_showed}</TableCell>
                     <TableCell className="text-right">{totals.deals_closed}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(totals.cash_collected)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(totals.revenue)}</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
