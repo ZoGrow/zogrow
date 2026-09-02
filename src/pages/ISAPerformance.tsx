@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { subDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target, Phone, PhoneCall, CalendarDays, Clock } from "lucide-react";
+import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Phone, PhoneCall, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { KPICard } from "@/components/dashboard/KPICard";
@@ -337,10 +337,9 @@ export default function ISAPerformance() {
     return phones.size;
   }, [callLogs, selectedISA]);
 
-  // Contact Rate = pickups ÷ unique leads called (repeat attempts don't count twice)
-  const contactRate = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
-  // List Coverage = unique leads called ÷ total leads (is the list being worked?)
-  const listCoverage = totals.leads > 0 ? (uniqueLeadsCalled / totals.leads) * 100 : 0;
+  // Pickup Rate per unique lead actually called (repeat attempts don't count twice)
+  const pickupRatePerUniqueLead = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
+
 
   const callStats = useMemo(() => {
     const relevant = callLogs;
@@ -460,19 +459,13 @@ export default function ISAPerformance() {
           variant="primary"
         />
         <KPICard
-          title="Contact Rate"
-          value={`${contactRate.toFixed(1)}%`}
+          title="Pickup Rate / Unique Lead"
+          value={`${pickupRatePerUniqueLead.toFixed(1)}%`}
           subtitle={`${totals.pickups} pickups / ${uniqueLeadsCalled} unique leads called`}
           icon={Percent}
-          variant={contactRate >= 20 ? "success" : "warning"}
+          variant={pickupRatePerUniqueLead >= 20 ? "success" : "warning"}
         />
-        <KPICard
-          title="List Coverage"
-          value={`${listCoverage.toFixed(1)}%`}
-          subtitle={`${uniqueLeadsCalled} unique called / ${totals.leads} leads`}
-          icon={Target}
-          variant={listCoverage >= 80 ? "success" : "warning"}
-        />
+
         <KPICard
           title="Appts Booked"
           value={totals.booked.toLocaleString()}
