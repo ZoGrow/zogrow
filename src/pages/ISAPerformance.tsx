@@ -364,7 +364,7 @@ export default function ISAPerformance() {
           variant="primary"
         />
         <KPICard
-          title="Appts Showed"
+          title="Live Transfers"
           value={totals.showed.toLocaleString()}
           icon={CalendarCheck}
           variant="success"
