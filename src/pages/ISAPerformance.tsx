@@ -404,8 +404,8 @@ export default function ISAPerformance() {
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-success">{showUpRate.toFixed(1)}%</p>
-              <p className="text-sm text-muted-foreground mt-1">Show-Up Rate</p>
-              <p className="text-xs text-muted-foreground">{totals.booked} booked → {totals.showed} showed</p>
+              <p className="text-sm text-muted-foreground mt-1">Live Transfer Rate</p>
+              <p className="text-xs text-muted-foreground">{totals.booked} booked → {totals.showed} live transfers</p>
             </div>
           </CardContent>
         </Card>
@@ -520,9 +520,9 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Pickups</TableHead>
                   <TableHead className="text-muted-foreground text-right">Pickup/Lead</TableHead>
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
-                  <TableHead className="text-muted-foreground text-right">Showed</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
                   <TableHead className="text-muted-foreground text-right">Lead→Appt</TableHead>
-                  <TableHead className="text-muted-foreground text-right">Show Rate</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Live Transfer Rate</TableHead>
                   <TableHead className="text-muted-foreground text-right">Contracts</TableHead>
                   <TableHead className="text-muted-foreground text-right">Deals</TableHead>
                 </TableRow>
