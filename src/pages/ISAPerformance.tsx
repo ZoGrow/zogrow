@@ -387,6 +387,34 @@ export default function ISAPerformance() {
           icon={TrendingUp}
           variant={leadToApptRate >= 30 ? "success" : "warning"}
         />
+        <KPICard
+          title="Lead → Live Transfer Rate"
+          value={`${leadToLiveTransferRate.toFixed(1)}%`}
+          subtitle={`${totals.showed} transfers / ${totals.leads} leads`}
+          icon={TrendingUp}
+          variant={leadToLiveTransferRate >= 10 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Live Transfer"
+          value={`${pickupToLiveTransferRate.toFixed(1)}%`}
+          subtitle={`${totals.showed} transfers / ${totals.pickups} pickups`}
+          icon={PhoneCall}
+          variant={pickupToLiveTransferRate >= 15 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Appt Rate"
+          value={`${pickupToAppointmentRate.toFixed(1)}%`}
+          subtitle={`${totals.booked} booked / ${totals.pickups} pickups`}
+          icon={Calendar}
+          variant={pickupToAppointmentRate >= 30 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Pickup → Total Rate"
+          value={`${pickupToTotalRate.toFixed(1)}%`}
+          subtitle={`${totals.showed + totals.booked} outcomes / ${totals.pickups} pickups`}
+          icon={Percent}
+          variant={pickupToTotalRate >= 45 ? "success" : "warning"}
+        />
       </div>
 
       {/* Conversion Rates */}
