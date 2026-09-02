@@ -205,6 +205,10 @@ export default function ISAPerformance() {
         deals: stats.deals,
         contracts: stats.contracts,
         leadToApptRate: stats.leads > 0 ? (stats.booked / stats.leads) * 100 : 0,
+        leadToLiveTransferRate: stats.leads > 0 ? (stats.showed / stats.leads) * 100 : 0,
+        pickupToLiveTransferRate: stats.pickups > 0 ? (stats.showed / stats.pickups) * 100 : 0,
+        pickupToAppointmentRate: stats.pickups > 0 ? (stats.booked / stats.pickups) * 100 : 0,
+        pickupToTotalRate: stats.pickups > 0 ? ((stats.showed + stats.booked) / stats.pickups) * 100 : 0,
         showUpRate: stats.booked > 0 ? (stats.showed / stats.booked) * 100 : 0,
       });
     });
