@@ -157,24 +157,29 @@ Deno.serve(async (req) => {
 
     for (const ev of events) {
       const clientId = firstOf(ev, ["client_id", "clientId"]);
-      const clientName = firstOf(ev, [
-        "client_name",
-        "clientName",
-        "campaign_name",
-        "campaign",
-        "list_name",
-        "list",
-        "group_name",
-      ]);
+      // Try each candidate name until one matches a client
+      const ghlLocation = firstOf(ev, ["ghl_location_name", "location_name", "sub_account_name"]);
+      const ghlLocationBase = ghlLocation ? String(ghlLocation).split(" - ")[0].trim() : null;
+      const nameCandidates = [
+        firstOf(ev, ["client_name", "clientName"]),
+        ghlLocationBase,
+        ghlLocation,
+        firstOf(ev, ["campaign_name", "campaign", "list_name", "list", "group_name"]),
+      ].filter((v) => v != null && String(v).trim() !== "").map(String);
 
       let resolvedClientId: string | null = clientId;
-      if (!resolvedClientId && clientName) {
-        const matched = findBestClient(allClients || [], String(clientName));
-        console.log(`Client match: "${clientName}" -> "${matched?.client_name || "NO MATCH"}"`);
-        resolvedClientId = matched?.id || null;
+      if (!resolvedClientId) {
+        for (const candidate of nameCandidates) {
+          const matched = findBestClient(allClients || [], candidate);
+          console.log(`Client match: "${candidate}" -> "${matched?.client_name || "NO MATCH"}"`);
+          if (matched) {
+            resolvedClientId = matched.id;
+            break;
+          }
+        }
       }
       if (!resolvedClientId) {
-        results.push({ skipped: true, reason: `Unmatched client for "${clientName ?? ""}"` });
+        results.push({ skipped: true, reason: `Unmatched client for "${nameCandidates[0] ?? ""}"` });
         continue;
       }
 
