@@ -490,17 +490,11 @@ export default function B2BAds() {
       </div>
 
       {/* Row 2: Outcome Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <KPICard
           title="Deals Closed"
           value={totals.deals_closed}
           icon={Handshake}
-          variant="green"
-        />
-        <KPICard
-          title="Cash Collected"
-          value={formatCurrency(totals.cash_collected)}
-          icon={DollarSign}
           variant="green"
         />
         <KPICard
@@ -807,17 +801,6 @@ export default function B2BAds() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Cash Collected ($)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.cash_collected}
-                  onChange={(e) => handleInputChange("cash_collected", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
                 <Label>Revenue ($)</Label>
                 <Input
                   type="number"
@@ -892,7 +875,6 @@ export default function B2BAds() {
                     <TableHead className="text-right">Qualified</TableHead>
                     <TableHead className="text-right">Qual. Intro</TableHead>
                     <TableHead className="text-right">Deals</TableHead>
-                    <TableHead className="text-right">Cash</TableHead>
                     <TableHead className="text-right">Revenue</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -913,7 +895,6 @@ export default function B2BAds() {
                       <TableCell className="text-right">{metric.qualified_showed || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).qualified_intro_showed || 0}</TableCell>
                       <TableCell className="text-right">{metric.deals_closed || 0}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(metric.cash_collected || 0)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(metric.revenue || 0)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
@@ -948,7 +929,6 @@ export default function B2BAds() {
                     <TableCell className="text-right">{totals.qualified_showed}</TableCell>
                     <TableCell className="text-right">{totals.qualified_intro_showed}</TableCell>
                     <TableCell className="text-right">{totals.deals_closed}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(totals.cash_collected)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(totals.revenue)}</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
