@@ -17,7 +17,8 @@ import {
   MessageSquare
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logoAsset from "@/assets/zogrow-logo.png.asset.json";
+const logo = logoAsset.url;
 import {
   Sidebar,
   SidebarContent,
