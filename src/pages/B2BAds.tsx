@@ -490,17 +490,11 @@ export default function B2BAds() {
       </div>
 
       {/* Row 2: Outcome Metrics */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <KPICard
           title="Deals Closed"
           value={totals.deals_closed}
           icon={Handshake}
-          variant="green"
-        />
-        <KPICard
-          title="Cash Collected"
-          value={formatCurrency(totals.cash_collected)}
-          icon={DollarSign}
           variant="green"
         />
         <KPICard
@@ -804,17 +798,6 @@ export default function B2BAds() {
                   placeholder="0"
                   value={formData.deals_closed}
                   onChange={(e) => handleInputChange("deals_closed", e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Cash Collected ($)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.cash_collected}
-                  onChange={(e) => handleInputChange("cash_collected", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
