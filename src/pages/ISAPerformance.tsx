@@ -418,7 +418,7 @@ export default function ISAPerformance() {
       </div>
 
       {/* Conversion Rates */}
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="glass-card">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -429,6 +429,42 @@ export default function ISAPerformance() {
           </CardContent>
         </Card>
         <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-primary">{leadToLiveTransferRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Lead → Live Transfer</p>
+              <p className="text-xs text-muted-foreground">{totals.leads} leads → {totals.showed} transfers</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold">{pickupToLiveTransferRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Live Transfer</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.showed} transfers</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold">{pickupToAppointmentRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Appt Booked</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.booked} booked</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card md:col-span-2">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-success">{pickupToTotalRate.toFixed(1)}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Pickup → Total Outcomes</p>
+              <p className="text-xs text-muted-foreground">{totals.pickups} pickups → {totals.showed + totals.booked} outcomes</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card md:col-span-2">
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold">{totals.deals}</p>
