@@ -302,7 +302,6 @@ export default function ClientDetail() {
       ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
       cpl: totals.leads > 0 ? totals.ad_spend / totals.leads : 0,
       cac: totals.deals_closed > 0 ? totals.ad_spend / totals.deals_closed : 0,
-      aov: totals.deals_closed > 0 ? totals.revenue / totals.deals_closed : 0,
       roas: totals.ad_spend > 0 ? totals.revenue / totals.ad_spend : 0,
       show_up_rate: totalBooked > 0 ? (totals.appointments_showed / totalBooked) * 100 : 0,
       cost_per_appointment_booked: totalBooked > 0 ? totals.ad_spend / totalBooked : 0,
@@ -595,12 +594,6 @@ export default function ClientDetail() {
           value={formatCurrency(metrics.cac)}
           icon={DollarSign}
           variant={metrics.cac < 5000 ? "success" : "warning"}
-        />
-        <KPICard
-          title="AOV (Revenue / Deal)"
-          value={formatCurrency(metrics.aov)}
-          icon={DollarSign}
-          variant="success"
         />
       </div>
 
