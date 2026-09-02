@@ -82,6 +82,9 @@ interface ISASummary {
   totalContracts: number;
 }
 
+// ISAs who don't have app accounts yet still appear in the dropdown
+const DEFAULT_ISA_NAMES = ["Christian Mendiola"];
+
 export default function ISAPerformance() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
