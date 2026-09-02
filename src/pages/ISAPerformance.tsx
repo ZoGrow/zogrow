@@ -469,7 +469,44 @@ export default function ISAPerformance() {
           icon={Percent}
           variant={pickupToTotalRate >= 45 ? "success" : "warning"}
         />
+        <KPICard
+          title="Total Talk Time"
+          value={formatDuration(callStats.totalTalkSeconds)}
+          subtitle={`${callStats.totalCalls.toLocaleString()} dialer calls logged`}
+          icon={Clock}
+          variant="primary"
+        />
+        <KPICard
+          title="Avg Talk Time"
+          value={formatDuration(callStats.avgTalkSeconds)}
+          subtitle="per connected call"
+          icon={Clock}
+          variant="primary"
+        />
       </div>
+
+      {/* Dialer dispositions */}
+      {callStats.dispositions.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Call Dispositions (Dialer)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {callStats.dispositions.map((d) => (
+                <Badge key={d.label} variant="secondary" className="text-sm">
+                  {d.label}: {d.count.toLocaleString()}
+                  <span className="ml-1 text-muted-foreground">
+                    ({callStats.totalCalls > 0 ? ((d.count / callStats.totalCalls) * 100).toFixed(1) : "0.0"}%)
+                  </span>
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
 
       {/* Conversion Rates */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
