@@ -201,13 +201,13 @@ Deno.serve(async (req) => {
       const dialedAtRaw = firstOf(ev, [
         "call_time",
         "call_date",
-        "start_time",
         "started_at",
         "timestamp",
         "date",
         "created_at",
       ]);
-      const dialedAt = dialedAtRaw ? new Date(String(dialedAtRaw)) : new Date();
+      const tz = String(firstOf(ev, ["time_zone", "timezone", "tz"]) || "America/Chicago");
+      const dialedAt = dialedAtRaw ? parseZonedTimestamp(String(dialedAtRaw), tz) : new Date();
       const dialedAtValid = isNaN(dialedAt.getTime()) ? new Date() : dialedAt;
 
       const durationSeconds = toSeconds(
