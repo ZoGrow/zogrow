@@ -104,6 +104,29 @@ const NON_PICKUP_KEYWORDS = [
   "cancel",
 ];
 
+// Parse "YYYY-MM-DD HH:mm:ss" as wall-clock time in the given IANA zone (default America/Chicago)
+function parseZonedTimestamp(raw: string, timeZone: string): Date {
+  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return new Date(raw);
+  const [, y, mo, d, h, mi, s] = m;
+  // Guess: treat wall clock as UTC, then shift by the zone's offset at that instant
+  const guess = Date.UTC(+y, +mo - 1, +d, +h, +mi, +(s || 0));
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date(guess));
+    const get = (t: string) => +(parts.find((p) => p.type === t)?.value || 0);
+    const wallAsUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour") % 24, get("minute"), get("second"));
+    const offsetMs = wallAsUtc - guess;
+    return new Date(guess - offsetMs);
+  } catch {
+    return new Date(raw);
+  }
+}
+
 function isPickup(disposition: string | null, status: string | null, durationSeconds: number): boolean {
   const text = `${disposition || ""} ${status || ""}`.toLowerCase().trim();
   if (text) {
@@ -157,53 +180,63 @@ Deno.serve(async (req) => {
 
     for (const ev of events) {
       const clientId = firstOf(ev, ["client_id", "clientId"]);
-      const clientName = firstOf(ev, [
-        "client_name",
-        "clientName",
-        "campaign_name",
-        "campaign",
-        "list_name",
-        "list",
-        "group_name",
-      ]);
+      // Try each candidate name until one matches a client
+      const ghlLocation = firstOf(ev, ["ghl_location_name", "location_name", "sub_account_name"]);
+      const ghlLocationBase = ghlLocation ? String(ghlLocation).split(" - ")[0].trim() : null;
+      const nameCandidates = [
+        firstOf(ev, ["client_name", "clientName"]),
+        ghlLocationBase,
+        ghlLocation,
+        firstOf(ev, ["campaign_name", "campaign", "list_name", "list", "group_name"]),
+      ].filter((v) => v != null && String(v).trim() !== "").map(String);
 
       let resolvedClientId: string | null = clientId;
-      if (!resolvedClientId && clientName) {
-        const matched = findBestClient(allClients || [], String(clientName));
-        console.log(`Client match: "${clientName}" -> "${matched?.client_name || "NO MATCH"}"`);
-        resolvedClientId = matched?.id || null;
+      if (!resolvedClientId) {
+        for (const candidate of nameCandidates) {
+          const matched = findBestClient(allClients || [], candidate);
+          console.log(`Client match: "${candidate}" -> "${matched?.client_name || "NO MATCH"}"`);
+          if (matched) {
+            resolvedClientId = matched.id;
+            break;
+          }
+        }
       }
       if (!resolvedClientId) {
-        results.push({ skipped: true, reason: `Unmatched client for "${clientName ?? ""}"` });
+        results.push({ skipped: true, reason: `Unmatched client for "${nameCandidates[0] ?? ""}"` });
         continue;
       }
 
-      const externalEventId = firstOf(ev, [
+      let externalEventId = firstOf(ev, [
         "call_id",
         "callId",
         "unique_id",
         "uniqueid",
         "event_id",
-        "id",
         "call_uuid",
         "recording_id",
       ]);
+      if (!externalEventId) {
+        // HP has no unique call id — build one from lead/contact + call time
+        const leadRef = firstOf(ev, ["leadId", "lead_id", "contactId", "contact_id", "id"]);
+        const timeRef = firstOf(ev, ["call_time", "call_date", "timestamp"]);
+        if (leadRef && timeRef) externalEventId = `hp-${leadRef}-${timeRef}`;
+      }
       const dialedAtRaw = firstOf(ev, [
         "call_time",
         "call_date",
-        "start_time",
         "started_at",
         "timestamp",
         "date",
         "created_at",
       ]);
-      const dialedAt = dialedAtRaw ? new Date(String(dialedAtRaw)) : new Date();
+      const tz = String(firstOf(ev, ["time_zone", "timezone", "tz"]) || "America/Chicago");
+      const dialedAt = dialedAtRaw ? parseZonedTimestamp(String(dialedAtRaw), tz) : new Date();
       const dialedAtValid = isNaN(dialedAt.getTime()) ? new Date() : dialedAt;
 
       const durationSeconds = toSeconds(
         firstOf(ev, ["talk_time", "talktime", "duration", "call_duration", "duration_seconds", "length"]),
       );
-      const disposition = firstOf(ev, ["disposition", "call_disposition", "outcome", "result", "status_name"]);
+      const disposition = firstOf(ev, ["disposition", "call_disposition", "call_dispostion", "outcome", "result", "status_name"]);
       const callStatus = firstOf(ev, ["call_status", "status", "call_result"]);
       const agentName = firstOf(ev, ["agent_name", "agent", "user_name", "user", "rep", "caller_name"]);
       const campaignName = firstOf(ev, ["campaign_name", "campaign", "list_name", "list"]);
