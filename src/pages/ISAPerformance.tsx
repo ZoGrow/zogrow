@@ -337,10 +337,9 @@ export default function ISAPerformance() {
     return phones.size;
   }, [callLogs, selectedISA]);
 
-  // Contact Rate = pickups ÷ unique leads called (repeat attempts don't count twice)
-  const contactRate = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
-  // List Coverage = unique leads called ÷ total leads (is the list being worked?)
-  const listCoverage = totals.leads > 0 ? (uniqueLeadsCalled / totals.leads) * 100 : 0;
+  // Pickup Rate per unique lead actually called (repeat attempts don't count twice)
+  const pickupRatePerUniqueLead = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
+
 
   const callStats = useMemo(() => {
     const relevant = callLogs;
