@@ -182,6 +182,13 @@ export default function ISAPerformance() {
     return Array.from(names).sort();
   }, [metrics]);
 
+  // Merge account-based ISAs with the default list for the dropdown
+  const isaOptions = useMemo(() => {
+    const names = new Set<string>(DEFAULT_ISA_NAMES);
+    isaUsers.forEach(u => names.add(u.name));
+    return Array.from(names).sort().map(name => ({ name }));
+  }, [isaUsers]);
+
   // Filter metrics by selected ISA
   const filteredMetrics = useMemo(() => {
     if (selectedISA === "all") return metrics;
