@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { subDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target, Phone, PhoneCall, CalendarDays } from "lucide-react";
+import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target, Phone, PhoneCall, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { KPICard } from "@/components/dashboard/KPICard";
@@ -42,6 +42,16 @@ interface Client {
   client_name: string;
 }
 
+interface CallLog {
+  id: string;
+  client_id: string;
+  agent_name: string | null;
+  disposition: string | null;
+  call_status: string | null;
+  duration_seconds: number | null;
+  dialed_at: string;
+}
+
 interface ISAClientStats {
   clientId: string;
   clientName: string;
@@ -78,6 +88,7 @@ export default function ISAPerformance() {
     to: new Date(),
   });
   const [metrics, setMetrics] = useState<MetricRow[]>([]);
+  const [callLogs, setCallLogs] = useState<CallLog[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isaUsers, setIsaUsers] = useState<{ name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,13 +135,20 @@ export default function ISAPerformance() {
         ? format(dateRange.to, "yyyy-MM-dd") 
         : format(new Date(), "yyyy-MM-dd");
 
-      const [metricsRes, clientsRes] = await Promise.all([
+      const [metricsRes, clientsRes, callsRes] = await Promise.all([
         supabase
           .from("metrics")
           .select("id, client_id, setter, leads, dials_made, pickups, appointments_booked, appointments_showed, deals_closed, contracts_signed, date")
           .gte("date", fromDate)
           .lte("date", toDate),
         supabase.from("clients").select("id, client_name"),
+        supabase
+          .from("dial_logs")
+          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at")
+          .gte("dialed_at", `${fromDate}T00:00:00`)
+          .lte("dialed_at", `${toDate}T23:59:59`)
+          .order("dialed_at", { ascending: false })
+          .limit(5000),
       ]);
 
       if (!metricsRes.error) {
@@ -138,6 +156,9 @@ export default function ISAPerformance() {
       }
       if (!clientsRes.error) {
         setClients(clientsRes.data || []);
+      }
+      if (!callsRes.error) {
+        setCallLogs((callsRes.data as CallLog[]) || []);
       }
       setLoading(false);
     };
@@ -291,6 +312,38 @@ export default function ISAPerformance() {
   const apptToContractRate = totals.showed > 0 ? (totals.contracts / totals.showed) * 100 : 0;
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
 
+  // ----- Dialer call log stats (HotProspector) -----
+  const callStats = useMemo(() => {
+    const relevant = callLogs;
+    const totalTalkSeconds = relevant.reduce((s, c) => s + (c.duration_seconds || 0), 0);
+    const connected = relevant.filter((c) => (c.duration_seconds || 0) > 0);
+    const dispositions = new Map<string, number>();
+    relevant.forEach((c) => {
+      const label = (c.disposition || c.call_status || "Unknown").trim();
+      dispositions.set(label, (dispositions.get(label) || 0) + 1);
+    });
+    return {
+      totalCalls: relevant.length,
+      totalTalkSeconds,
+      avgTalkSeconds: connected.length > 0 ? totalTalkSeconds / connected.length : 0,
+      dispositions: Array.from(dispositions.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((a, b) => b.count - a.count),
+    };
+  }, [callLogs]);
+
+  const formatDuration = (seconds: number) => {
+    const s = Math.round(seconds);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m ${sec}s`;
+    return `${sec}s`;
+  };
+
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -416,7 +469,44 @@ export default function ISAPerformance() {
           icon={Percent}
           variant={pickupToTotalRate >= 45 ? "success" : "warning"}
         />
+        <KPICard
+          title="Total Talk Time"
+          value={formatDuration(callStats.totalTalkSeconds)}
+          subtitle={`${callStats.totalCalls.toLocaleString()} dialer calls logged`}
+          icon={Clock}
+          variant="primary"
+        />
+        <KPICard
+          title="Avg Talk Time"
+          value={formatDuration(callStats.avgTalkSeconds)}
+          subtitle="per connected call"
+          icon={Clock}
+          variant="primary"
+        />
       </div>
+
+      {/* Dialer dispositions */}
+      {callStats.dispositions.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Call Dispositions (Dialer)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {callStats.dispositions.map((d) => (
+                <Badge key={d.label} variant="secondary" className="text-sm">
+                  {d.label}: {d.count.toLocaleString()}
+                  <span className="ml-1 text-muted-foreground">
+                    ({callStats.totalCalls > 0 ? ((d.count / callStats.totalCalls) * 100).toFixed(1) : "0.0"}%)
+                  </span>
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
 
       {/* Conversion Rates */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

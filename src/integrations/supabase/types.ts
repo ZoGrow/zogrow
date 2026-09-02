@@ -360,43 +360,58 @@ export type Database = {
       }
       dial_logs: {
         Row: {
+          agent_name: string | null
           call_direction: string | null
           call_status: string | null
           caller_name: string | null
           caller_phone: string | null
+          campaign_name: string | null
           client_id: string
           contact_name: string | null
           contact_phone: string | null
           created_at: string
           dialed_at: string
+          dialer_source: string | null
+          disposition: string | null
+          duration_seconds: number
           external_event_id: string | null
           id: string
           raw_payload: Json | null
         }
         Insert: {
+          agent_name?: string | null
           call_direction?: string | null
           call_status?: string | null
           caller_name?: string | null
           caller_phone?: string | null
+          campaign_name?: string | null
           client_id: string
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
           dialed_at?: string
+          dialer_source?: string | null
+          disposition?: string | null
+          duration_seconds?: number
           external_event_id?: string | null
           id?: string
           raw_payload?: Json | null
         }
         Update: {
+          agent_name?: string | null
           call_direction?: string | null
           call_status?: string | null
           caller_name?: string | null
           caller_phone?: string | null
+          campaign_name?: string | null
           client_id?: string
           contact_name?: string | null
           contact_phone?: string | null
           created_at?: string
           dialed_at?: string
+          dialer_source?: string | null
+          disposition?: string | null
+          duration_seconds?: number
           external_event_id?: string | null
           id?: string
           raw_payload?: Json | null

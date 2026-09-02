@@ -1,1 +1,4 @@
 project_id = "qtikzflbhhzcrycokkal"
+
+[functions.hotprospector-webhook]
+verify_jwt = false
