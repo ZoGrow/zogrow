@@ -548,7 +548,7 @@ export default function ClientDetail() {
           icon={MousePointerClick}
         />
         <KPICard
-          title="Appointments Showed"
+          title="Live Transfers"
           value={formatNumber(metrics.appointments_showed)}
           icon={CalendarCheck}
         />
