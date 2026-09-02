@@ -568,6 +568,10 @@ export default function ISAPerformance() {
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
                   <TableHead className="text-muted-foreground text-right">Live Transfers</TableHead>
                   <TableHead className="text-muted-foreground text-right">Lead→Appt</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Lead→LT</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→LT</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Appt</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup→Total</TableHead>
                   <TableHead className="text-muted-foreground text-right">Deals</TableHead>
                 </TableRow>
               </TableHeader>
