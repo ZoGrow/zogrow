@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { subDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target } from "lucide-react";
+import { Headphones, Calendar, CalendarCheck, Percent, Building2, Users, TrendingUp, Target, Phone, PhoneCall, CalendarDays } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { KPICard } from "@/components/dashboard/KPICard";
@@ -28,6 +28,8 @@ interface MetricRow {
   client_id: string;
   setter: string | null;
   leads: number | null;
+  dials_made: number | null;
+  pickups: number | null;
   appointments_booked: number | null;
   appointments_showed: number | null;
   deals_closed: number | null;
@@ -44,6 +46,9 @@ interface ISAClientStats {
   clientId: string;
   clientName: string;
   leads: number;
+  dials: number;
+  pickups: number;
+  pickupRatePerLead: number;
   booked: number;
   showed: number;
   deals: number;
@@ -55,6 +60,8 @@ interface ISAClientStats {
 interface ISASummary {
   name: string;
   totalLeads: number;
+  totalDials: number;
+  totalPickups: number;
   totalBooked: number;
   totalShowed: number;
   totalDeals: number;
@@ -116,7 +123,7 @@ export default function ISAPerformance() {
       const [metricsRes, clientsRes] = await Promise.all([
         supabase
           .from("metrics")
-          .select("id, client_id, setter, leads, appointments_booked, appointments_showed, deals_closed, contracts_signed, date")
+          .select("id, client_id, setter, leads, dials_made, pickups, appointments_booked, appointments_showed, deals_closed, contracts_signed, date")
           .gte("date", fromDate)
           .lte("date", toDate),
         supabase.from("clients").select("id, client_name"),
@@ -157,6 +164,8 @@ export default function ISAPerformance() {
   const clientStats = useMemo(() => {
     const statsMap = new Map<string, {
       leads: number;
+      dials: number;
+      pickups: number;
       booked: number;
       showed: number;
       deals: number;
@@ -165,10 +174,12 @@ export default function ISAPerformance() {
 
     filteredMetrics.forEach((m) => {
       const current = statsMap.get(m.client_id) || { 
-        leads: 0, booked: 0, showed: 0, deals: 0, contracts: 0 
+        leads: 0, dials: 0, pickups: 0, booked: 0, showed: 0, deals: 0, contracts: 0 
       };
       statsMap.set(m.client_id, {
         leads: current.leads + (m.leads || 0),
+        dials: current.dials + (m.dials_made || 0),
+        pickups: current.pickups + (m.pickups || 0),
         booked: current.booked + (m.appointments_booked || 0),
         showed: current.showed + (m.appointments_showed || 0),
         deals: current.deals + (m.deals_closed || 0),
@@ -182,6 +193,9 @@ export default function ISAPerformance() {
         clientId,
         clientName: clientMap.get(clientId) || "Unknown Client",
         leads: stats.leads,
+        dials: stats.dials,
+        pickups: stats.pickups,
+        pickupRatePerLead: stats.leads > 0 ? (stats.pickups / stats.leads) * 100 : 0,
         booked: stats.booked,
         showed: stats.showed,
         deals: stats.deals,
@@ -199,12 +213,14 @@ export default function ISAPerformance() {
     return clientStats.reduce(
       (acc, client) => ({
         leads: acc.leads + client.leads,
+        dials: acc.dials + client.dials,
+        pickups: acc.pickups + client.pickups,
         booked: acc.booked + client.booked,
         showed: acc.showed + client.showed,
         deals: acc.deals + client.deals,
         contracts: acc.contracts + client.contracts,
       }),
-      { leads: 0, booked: 0, showed: 0, deals: 0, contracts: 0 }
+      { leads: 0, dials: 0, pickups: 0, booked: 0, showed: 0, deals: 0, contracts: 0 }
     );
   }, [clientStats]);
 
@@ -217,6 +233,8 @@ export default function ISAPerformance() {
       const current = summaryMap.get(m.setter) || {
         name: m.setter,
         totalLeads: 0,
+        totalDials: 0,
+        totalPickups: 0,
         totalBooked: 0,
         totalShowed: 0,
         totalDeals: 0,
@@ -225,6 +243,8 @@ export default function ISAPerformance() {
       summaryMap.set(m.setter, {
         ...current,
         totalLeads: current.totalLeads + (m.leads || 0),
+        totalDials: current.totalDials + (m.dials_made || 0),
+        totalPickups: current.totalPickups + (m.pickups || 0),
         totalBooked: current.totalBooked + (m.appointments_booked || 0),
         totalShowed: current.totalShowed + (m.appointments_showed || 0),
         totalDeals: current.totalDeals + (m.deals_closed || 0),
@@ -234,6 +254,24 @@ export default function ISAPerformance() {
 
     return Array.from(summaryMap.values()).sort((a, b) => b.totalBooked - a.totalBooked);
   }, [metrics]);
+
+  const pickupRatePerLead = totals.leads > 0 ? (totals.pickups / totals.leads) * 100 : 0;
+
+  // Daily breakdown of dials / pickups
+  const dailyStats = useMemo(() => {
+    const map = new Map<string, { date: string; dials: number; pickups: number; leads: number; booked: number }>();
+    filteredMetrics.forEach((m) => {
+      const cur = map.get(m.date) || { date: m.date, dials: 0, pickups: 0, leads: 0, booked: 0 };
+      cur.dials += m.dials_made || 0;
+      cur.pickups += m.pickups || 0;
+      cur.leads += m.leads || 0;
+      cur.booked += m.appointments_booked || 0;
+      map.set(m.date, cur);
+    });
+    return Array.from(map.values())
+      .filter((d) => d.dials > 0 || d.pickups > 0 || d.leads > 0)
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+  }, [filteredMetrics]);
 
   const leadToApptRate = totals.leads > 0 ? (totals.booked / totals.leads) * 100 : 0;
   const showUpRate = totals.booked > 0 ? (totals.showed / totals.booked) * 100 : 0;
@@ -299,6 +337,25 @@ export default function ISAPerformance() {
           value={totals.leads.toLocaleString()}
           icon={Users}
           variant="primary"
+        />
+        <KPICard
+          title="Dials Made"
+          value={totals.dials.toLocaleString()}
+          icon={PhoneCall}
+          variant="primary"
+        />
+        <KPICard
+          title="Pickups"
+          value={totals.pickups.toLocaleString()}
+          icon={Phone}
+          variant="primary"
+        />
+        <KPICard
+          title="Pickup Rate / Lead"
+          value={`${pickupRatePerLead.toFixed(1)}%`}
+          subtitle={`${totals.pickups} pickups / ${totals.leads} leads`}
+          icon={Percent}
+          variant={pickupRatePerLead >= 60 ? "success" : "warning"}
         />
         <KPICard
           title="Appts Booked"
@@ -372,6 +429,64 @@ export default function ISAPerformance() {
         </Card>
       </div>
 
+      {/* Daily Dials & Pickups */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-primary" />
+            Daily Dials & Pickup Rate
+            {selectedISA !== "all" && (
+              <Badge variant="secondary" className="ml-2">
+                <Headphones className="h-3 w-3 mr-1" />
+                {selectedISA}
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {dailyStats.length === 0 ? (
+            <p className="text-center py-8 text-muted-foreground">No daily dial activity in this date range</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-muted-foreground">Date</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Dials Made</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickups</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Leads</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup Rate / Lead</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Booked</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {dailyStats.map((d) => {
+                  const rate = d.leads > 0 ? (d.pickups / d.leads) * 100 : 0;
+                  return (
+                    <TableRow key={d.date} className="border-border">
+                      <TableCell className="font-medium">
+                        {format(new Date(`${d.date}T00:00:00`), "MMM d, yyyy")}
+                      </TableCell>
+                      <TableCell className="text-right">{d.dials}</TableCell>
+                      <TableCell className="text-right">{d.pickups}</TableCell>
+                      <TableCell className="text-right">{d.leads}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          variant={rate >= 60 ? "default" : "secondary"}
+                          className={rate >= 60 ? "bg-success/10 text-success border-success/20" : ""}
+                        >
+                          {rate.toFixed(1)}%
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">{d.booked}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Client Breakdown Table */}
       <Card className="glass-card">
         <CardHeader>
@@ -401,6 +516,9 @@ export default function ISAPerformance() {
                 <TableRow className="border-border hover:bg-transparent">
                   <TableHead className="text-muted-foreground">Client</TableHead>
                   <TableHead className="text-muted-foreground text-right">Leads</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Dials</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickups</TableHead>
+                  <TableHead className="text-muted-foreground text-right">Pickup/Lead</TableHead>
                   <TableHead className="text-muted-foreground text-right">Booked</TableHead>
                   <TableHead className="text-muted-foreground text-right">Showed</TableHead>
                   <TableHead className="text-muted-foreground text-right">Lead→Appt</TableHead>
@@ -419,6 +537,16 @@ export default function ISAPerformance() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">{client.leads}</TableCell>
+                    <TableCell className="text-right">{client.dials}</TableCell>
+                    <TableCell className="text-right">{client.pickups}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupRatePerLead >= 60 ? "default" : "secondary"}
+                        className={client.pickupRatePerLead >= 60 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupRatePerLead.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right font-medium">{client.booked}</TableCell>
                     <TableCell className="text-right font-medium text-success">{client.showed}</TableCell>
                     <TableCell className="text-right">
@@ -445,6 +573,11 @@ export default function ISAPerformance() {
                 <TableRow className="border-t-2 border-border bg-muted/30 font-semibold">
                   <TableCell>Total</TableCell>
                   <TableCell className="text-right">{totals.leads}</TableCell>
+                  <TableCell className="text-right">{totals.dials}</TableCell>
+                  <TableCell className="text-right">{totals.pickups}</TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant="default">{pickupRatePerLead.toFixed(1)}%</Badge>
+                  </TableCell>
                   <TableCell className="text-right">{totals.booked}</TableCell>
                   <TableCell className="text-right text-success">{totals.showed}</TableCell>
                   <TableCell className="text-right">
