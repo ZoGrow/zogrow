@@ -605,6 +605,38 @@ export default function ISAPerformance() {
                         {client.leadToApptRate.toFixed(1)}%
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.leadToLiveTransferRate >= 10 ? "default" : "secondary"}
+                        className={client.leadToLiveTransferRate >= 10 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.leadToLiveTransferRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToLiveTransferRate >= 15 ? "default" : "secondary"}
+                        className={client.pickupToLiveTransferRate >= 15 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToLiveTransferRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToAppointmentRate >= 30 ? "default" : "secondary"}
+                        className={client.pickupToAppointmentRate >= 30 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToAppointmentRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={client.pickupToTotalRate >= 45 ? "default" : "secondary"}
+                        className={client.pickupToTotalRate >= 45 ? "bg-success/10 text-success border-success/20" : ""}
+                      >
+                        {client.pickupToTotalRate.toFixed(1)}%
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">{client.deals}</TableCell>
                   </TableRow>
                 ))}
