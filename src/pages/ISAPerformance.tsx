@@ -375,46 +375,16 @@ export default function ISAPerformance() {
           icon={TrendingUp}
           variant={leadToApptRate >= 30 ? "success" : "warning"}
         />
-        <KPICard
-          title="Show-Up Rate"
-          value={`${showUpRate.toFixed(1)}%`}
-          icon={Percent}
-          variant={showUpRate >= 60 ? "success" : "warning"}
-        />
-        <KPICard
-          title="Contracts"
-          value={totals.contracts.toLocaleString()}
-          icon={Target}
-          variant="success"
-        />
       </div>
 
       {/* Conversion Rates */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
         <Card className="glass-card">
           <CardContent className="pt-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-primary">{leadToApptRate.toFixed(1)}%</p>
               <p className="text-sm text-muted-foreground mt-1">Lead → Appt Booked</p>
               <p className="text-xs text-muted-foreground">{totals.leads} leads → {totals.booked} booked</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="glass-card">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-success">{showUpRate.toFixed(1)}%</p>
-              <p className="text-sm text-muted-foreground mt-1">Live Transfer Rate</p>
-              <p className="text-xs text-muted-foreground">{totals.booked} booked → {totals.showed} live transfers</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="glass-card">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-warning">{apptToContractRate.toFixed(1)}%</p>
-              <p className="text-sm text-muted-foreground mt-1">Showed → Contract</p>
-              <p className="text-xs text-muted-foreground">{totals.showed} showed → {totals.contracts} contracts</p>
             </div>
           </CardContent>
         </Card>
