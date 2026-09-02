@@ -66,11 +66,11 @@ export function AppSidebar() {
       <SidebarHeader className="p-6">
         <NavLink to="/" className="flex items-center gap-3 group">
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-background border border-border overflow-hidden">
-            <img src={logo} alt="Zogrow logo" className="h-12 w-12 object-contain" />
+            <img src={logo} alt="ZoGrow logo" className="h-12 w-12 object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
-              Zogrow
+              ZoGrow
             </span>
             <span className="text-xs text-muted-foreground">Metric Hub</span>
           </div>

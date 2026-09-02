@@ -109,11 +109,11 @@ export default function Auth() {
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-background border border-border overflow-hidden glow-primary">
-              <img src={logo} alt="Zogrow logo" className="h-12 w-12 object-contain" />
+              <img src={logo} alt="ZoGrow logo" className="h-12 w-12 object-contain" />
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold gradient-text">Zogrow</CardTitle>
+            <CardTitle className="text-2xl font-bold gradient-text">ZoGrow</CardTitle>
             <CardDescription className="mt-2">Metric Hub</CardDescription>
           </div>
         </CardHeader>
