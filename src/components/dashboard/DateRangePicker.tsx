@@ -18,6 +18,7 @@ interface DateRangePickerProps {
 }
 
 const presets = [
+  { label: "Today", getValue: () => ({ from: new Date(), to: new Date() }) },
   { label: "Last 7 days", getValue: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
   { label: "Last 30 days", getValue: () => ({ from: subDays(new Date(), 30), to: new Date() }) },
   { label: "Last 90 days", getValue: () => ({ from: subDays(new Date(), 90), to: new Date() }) },
