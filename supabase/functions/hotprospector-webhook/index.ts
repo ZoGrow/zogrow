@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
       const durationSeconds = toSeconds(
         firstOf(ev, ["talk_time", "talktime", "duration", "call_duration", "duration_seconds", "length"]),
       );
-      const disposition = firstOf(ev, ["disposition", "call_disposition", "outcome", "result", "status_name"]);
+      const disposition = firstOf(ev, ["disposition", "call_disposition", "call_dispostion", "outcome", "result", "status_name"]);
       const callStatus = firstOf(ev, ["call_status", "status", "call_result"]);
       const agentName = firstOf(ev, ["agent_name", "agent", "user_name", "user", "rep", "caller_name"]);
       const campaignName = firstOf(ev, ["campaign_name", "campaign", "list_name", "list"]);
