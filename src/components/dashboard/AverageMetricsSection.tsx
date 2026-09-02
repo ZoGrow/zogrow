@@ -27,6 +27,7 @@ interface AverageMetricsProps {
     avg_show_up_rate: number;
     avg_lead_to_appointment_rate: number;
     avg_cac: number;
+    avg_aov: number;
     avg_roas: number;
     avg_close_rate: number;
     client_count: number;
@@ -168,6 +169,11 @@ export function AverageMetricsSection({ avgMetrics, className }: AverageMetricsP
             label="Avg CAC (Cost/Deal)" 
             value={formatCurrency(avgMetrics.avg_cac)} 
             metricKey="cac"
+          />
+          <MetricItem 
+            label="Avg AOV (Revenue/Deal)" 
+            value={formatCurrency(avgMetrics.avg_aov)} 
+            metricKey="aov"
           />
         </div>
       </div>
