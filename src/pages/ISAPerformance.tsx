@@ -50,6 +50,7 @@ interface CallLog {
   call_status: string | null;
   duration_seconds: number | null;
   dialed_at: string;
+  contact_phone: string | null;
 }
 
 interface ISAClientStats {
@@ -147,7 +148,7 @@ export default function ISAPerformance() {
         supabase.from("clients").select("id, client_name"),
         supabase
           .from("dial_logs")
-          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at")
+          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at, contact_phone")
           .gte("dialed_at", `${fromDate}T00:00:00`)
           .lte("dialed_at", `${toDate}T23:59:59`)
           .order("dialed_at", { ascending: false })
