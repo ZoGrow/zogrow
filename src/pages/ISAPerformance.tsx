@@ -50,6 +50,7 @@ interface CallLog {
   call_status: string | null;
   duration_seconds: number | null;
   dialed_at: string;
+  contact_phone: string | null;
 }
 
 interface ISAClientStats {
@@ -147,7 +148,7 @@ export default function ISAPerformance() {
         supabase.from("clients").select("id, client_name"),
         supabase
           .from("dial_logs")
-          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at")
+          .select("id, client_id, agent_name, disposition, call_status, duration_seconds, dialed_at, contact_phone")
           .gte("dialed_at", `${fromDate}T00:00:00`)
           .lte("dialed_at", `${toDate}T23:59:59`)
           .order("dialed_at", { ascending: false })
@@ -323,6 +324,24 @@ export default function ISAPerformance() {
   const apptToDealRate = totals.showed > 0 ? (totals.deals / totals.showed) * 100 : 0;
 
   // ----- Dialer call log stats (HotProspector) -----
+  // Unique leads actually dialed (distinct phone numbers), filtered by selected ISA
+  const uniqueLeadsCalled = useMemo(() => {
+    const relevant = selectedISA === "all"
+      ? callLogs
+      : callLogs.filter((c) => c.agent_name === selectedISA);
+    const phones = new Set<string>();
+    relevant.forEach((c) => {
+      const p = (c.contact_phone || "").replace(/\D/g, "");
+      if (p) phones.add(p);
+    });
+    return phones.size;
+  }, [callLogs, selectedISA]);
+
+  // Contact Rate = pickups ÷ unique leads called (repeat attempts don't count twice)
+  const contactRate = uniqueLeadsCalled > 0 ? (totals.pickups / uniqueLeadsCalled) * 100 : 0;
+  // List Coverage = unique leads called ÷ total leads (is the list being worked?)
+  const listCoverage = totals.leads > 0 ? (uniqueLeadsCalled / totals.leads) * 100 : 0;
+
   const callStats = useMemo(() => {
     const relevant = callLogs;
     const totalTalkSeconds = relevant.reduce((s, c) => s + (c.duration_seconds || 0), 0);
@@ -432,6 +451,27 @@ export default function ISAPerformance() {
           subtitle={`${totals.pickups} pickups / ${totals.leads} leads`}
           icon={Percent}
           variant={pickupRatePerLead >= 60 ? "success" : "warning"}
+        />
+        <KPICard
+          title="Unique Leads Called"
+          value={uniqueLeadsCalled.toLocaleString()}
+          subtitle="Distinct contacts dialed (from dialer)"
+          icon={PhoneCall}
+          variant="primary"
+        />
+        <KPICard
+          title="Contact Rate"
+          value={`${contactRate.toFixed(1)}%`}
+          subtitle={`${totals.pickups} pickups / ${uniqueLeadsCalled} unique leads called`}
+          icon={Percent}
+          variant={contactRate >= 20 ? "success" : "warning"}
+        />
+        <KPICard
+          title="List Coverage"
+          value={`${listCoverage.toFixed(1)}%`}
+          subtitle={`${uniqueLeadsCalled} unique called / ${totals.leads} leads`}
+          icon={Target}
+          variant={listCoverage >= 80 ? "success" : "warning"}
         />
         <KPICard
           title="Appts Booked"
