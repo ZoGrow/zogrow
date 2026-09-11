@@ -37,7 +37,7 @@ async function fetchAllInsights(url: string): Promise<MetaInsight[]> {
   while (nextUrl) {
     const res = await fetch(nextUrl);
     const json = await res.json();
-    if (json.error) throw new Error(json.error.message);
+    if (json.error) throw new Error(JSON.stringify(json.error));
     if (json.data) all = all.concat(json.data);
     nextUrl = json.paging?.next || null;
   }
