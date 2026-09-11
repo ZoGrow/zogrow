@@ -37,7 +37,15 @@ async function fetchAllInsights(url: string): Promise<MetaInsight[]> {
   while (nextUrl) {
     const res = await fetch(nextUrl);
     const json = await res.json();
-    if (json.error) throw new Error(json.error.message);
+    if (json.error) {
+      const e = json.error;
+      if (e.type === "OAuthException") {
+        throw new Error(
+          `Meta rejected the request (${e.message}). The access token is expired, revoked, or the ad account/app is restricted. Generate a new long-lived token with ads_read and update META_ACCESS_TOKEN.`
+        );
+      }
+      throw new Error(e.message || JSON.stringify(e));
+    }
     if (json.data) all = all.concat(json.data);
     nextUrl = json.paging?.next || null;
   }
