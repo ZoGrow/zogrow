@@ -113,16 +113,16 @@ interface KPICardProps {
 
 function KPICard({ title, value, subtitle, icon: Icon, variant = 'default', className }: KPICardProps) {
   const variantStyles = {
-    purple: 'border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-transparent',
+    purple: 'border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-transparent',
     green: 'border-green-500/30 bg-gradient-to-br from-green-500/10 to-transparent',
-    yellow: 'border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent',
+    yellow: 'border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-transparent',
     default: 'border-border bg-card',
   };
 
   const iconStyles = {
-    purple: 'text-purple-400 bg-purple-500/20',
+    purple: 'text-blue-400 bg-blue-500/20',
     green: 'text-green-400 bg-green-500/20',
-    yellow: 'text-yellow-400 bg-yellow-500/20',
+    yellow: 'text-blue-400 bg-blue-500/20',
     default: 'text-muted-foreground bg-muted',
   };
 
