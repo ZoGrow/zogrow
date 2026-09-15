@@ -124,7 +124,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const META_ACCESS_TOKEN = Deno.env.get("META_ACCESS_TOKEN");
+    const META_ACCESS_TOKEN = Deno.env.get("META_SYSTEM_USER_TOKEN") || Deno.env.get("META_ACCESS_TOKEN");
     if (!META_ACCESS_TOKEN) throw new Error("META_ACCESS_TOKEN is not configured");
 
     const supabase = createClient(
