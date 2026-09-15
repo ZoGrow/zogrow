@@ -13,12 +13,13 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: "no token" }), { headers: { ...cors, "Content-Type": "application/json" } });
   }
 
-  // Self-inspect via debug_token (token as its own access_token)
-  const url = `https://graph.facebook.com/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(token)}`;
-  const res = await fetch(url);
-  const data = await res.json();
+  // 1) Who is this token for, and is it valid?
+  const meRes = await fetch(`https://graph.facebook.com/me?metadata=1&access_token=${encodeURIComponent(token)}`);
+  const me = await meRes.json();
 
-  return new Response(JSON.stringify({
-    debug: data.data ?? data,
-  }), { headers: { ...cors, "Content-Type": "application/json" } });
+  // 2) Try token inspection (may require app token; include whatever Meta returns)
+  const dbgRes = await fetch(`https://graph.facebook.com/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(token)}`);
+  const dbg = await dbgRes.json();
+
+  return new Response(JSON.stringify({ me, debug: dbg.data ?? dbg.error ?? dbg }), { headers: { ...cors, "Content-Type": "application/json" } });
 });
