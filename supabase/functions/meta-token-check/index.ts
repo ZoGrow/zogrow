@@ -8,7 +8,7 @@ const cors = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
-  const token = Deno.env.get("META_ACCESS_TOKEN");
+  const token = Deno.env.get("META_SYSTEM_USER_TOKEN") || Deno.env.get("META_ACCESS_TOKEN");
   if (!token) {
     return new Response(JSON.stringify({ error: "no token" }), { headers: { ...cors, "Content-Type": "application/json" } });
   }
