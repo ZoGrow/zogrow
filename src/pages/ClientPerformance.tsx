@@ -151,7 +151,7 @@ export default function ClientPerformance() {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + 1} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={totalCols} className="text-center py-8 text-muted-foreground">
                     No active clients found.
                   </TableCell>
                 </TableRow>
@@ -161,6 +161,17 @@ export default function ClientPerformance() {
                     <TableCell className="sticky left-0 bg-card z-10">
                       <div className="font-medium">{r.client_name}</div>
                       <div className="text-xs text-muted-foreground">{[r.market, r.state].filter(Boolean).join(", ")}</div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {(() => {
+                        const meta = r.ad_account_status ? adsStatusMeta[r.ad_account_status] : undefined;
+                        if (!meta) return <span className="text-xs text-muted-foreground">—</span>;
+                        return (
+                          <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium", meta.className)}>
+                            {meta.label}
+                          </span>
+                        );
+                      })()}
                     </TableCell>
                     {columns.map((c, i) => (
                       <TableCell
@@ -176,6 +187,7 @@ export default function ClientPerformance() {
               {rows.length > 0 && (
                 <TableRow className="bg-muted/40 font-semibold hover:bg-muted/40">
                   <TableCell className="sticky left-0 bg-muted z-10">Total ({rows.length})</TableCell>
+                  <TableCell />
                   {columns.map((c, i) => (
                     <TableCell key={c.key} className={cn("text-right whitespace-nowrap tabular-nums", i > 0 && columns[i - 1].group !== c.group && "border-l border-border")}>
                       {c.fmt(totals[c.key] || 0)}
