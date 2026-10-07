@@ -162,6 +162,28 @@ Deno.serve(async (req) => {
         const adAccountId = client.meta_ad_account_id.trim();
         const accountId = adAccountId.startsWith("act_") ? adAccountId : `act_${adAccountId}`;
 
+        // Detect ad account status: 1=ACTIVE, 3=UNSETTLED (payment error), others disabled
+        let accountStatus: "active" | "not_running" | "payment_error" | null = null;
+        try {
+          const acctRes = await fetch(`https://graph.facebook.com/v21.0/${accountId}?fields=account_status&access_token=${META_ACCESS_TOKEN}`);
+          const acctJson = await acctRes.json();
+          if (!acctJson.error && acctJson.account_status !== undefined) {
+            if (acctJson.account_status === 1) {
+              // Account is active — check whether any campaigns are actually running
+              const campRes = await fetch(`https://graph.facebook.com/v21.0/${accountId}/campaigns?effective_status=["ACTIVE"]&limit=1&fields=id&access_token=${META_ACCESS_TOKEN}`);
+              const campJson = await campRes.json();
+              accountStatus = !campJson.error && Array.isArray(campJson.data) && campJson.data.length === 0 ? "not_running" : "active";
+            } else if (acctJson.account_status === 3) {
+              accountStatus = "payment_error";
+            } else {
+              accountStatus = "not_running";
+            }
+            await supabase.from("clients").update({ ad_account_status: accountStatus }).eq("id", client.id);
+          }
+        } catch {
+          // Status check failure shouldn't block metric syncing
+        }
+
         if (backfillDays > 0) {
           const endDate = new Date();
           const startDate = new Date();
