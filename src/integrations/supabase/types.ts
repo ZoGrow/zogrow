@@ -321,6 +321,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          ad_account_status: string | null
           client_name: string
           created_at: string
           id: string
@@ -333,6 +334,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          ad_account_status?: string | null
           client_name: string
           created_at?: string
           id?: string
@@ -345,6 +347,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          ad_account_status?: string | null
           client_name?: string
           created_at?: string
           id?: string

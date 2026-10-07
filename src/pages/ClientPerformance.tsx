@@ -130,6 +130,7 @@ export default function ClientPerformance() {
               </TableRow>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="sticky left-0 bg-card z-10 min-w-[180px]">Client</TableHead>
+                <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground border-l border-border" />
                 {columns.map((c, i) => (
                   <TableHead
                     key={c.key}
