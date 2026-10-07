@@ -121,6 +121,7 @@ export default function ClientPerformance() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="sticky left-0 bg-card z-10" />
+                <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground border-l border-border">Ads Status</TableHead>
                 {groups.map(({ g, span }) => (
                   <TableHead key={g} colSpan={span} className="text-center text-xs uppercase tracking-wide text-primary border-l border-border">
                     {groupLabel[g]}
