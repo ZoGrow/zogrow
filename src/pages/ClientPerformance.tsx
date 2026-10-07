@@ -17,7 +17,13 @@ const num = (v: number) => (v || 0).toLocaleString();
 const pct = (v: number) => `${(isFinite(v) ? v : 0).toFixed(1)}%`;
 const div = (a: number, b: number) => (b > 0 ? a / b : 0);
 
-type Row = Record<string, number | string> & { id: string; client_name: string; market: string; state: string };
+type Row = Record<string, number | string> & { id: string; client_name: string; market: string; state: string; ad_account_status?: string | null };
+
+const adsStatusMeta: Record<string, { label: string; className: string }> = {
+  active: { label: "Ads Active", className: "bg-green-500/15 text-green-400 border-green-500/30" },
+  not_running: { label: "Not Running", className: "bg-red-500/15 text-red-400 border-red-500/30" },
+  payment_error: { label: "Payment Error", className: "bg-red-500/15 text-red-400 border-red-500/30" },
+};
 
 const columns: { key: string; label: string; group: "ads" | "isa" | "results"; fmt: (v: number) => string }[] = [
   { key: "ad_spend", label: "Spend", group: "ads", fmt: money },
@@ -89,6 +95,7 @@ export default function ClientPerformance() {
   }, [rows]);
 
   const groups = (["ads", "isa", "results"] as const).map((g) => ({ g, span: columns.filter((c) => c.group === g).length }));
+  const totalCols = columns.length + 2; // client name + ads status
 
   return (
     <div className="space-y-6">
@@ -114,6 +121,7 @@ export default function ClientPerformance() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="sticky left-0 bg-card z-10" />
+                <TableHead className="text-center text-xs uppercase tracking-wide text-muted-foreground border-l border-border">Ads Status</TableHead>
                 {groups.map(({ g, span }) => (
                   <TableHead key={g} colSpan={span} className="text-center text-xs uppercase tracking-wide text-primary border-l border-border">
                     {groupLabel[g]}
@@ -143,7 +151,7 @@ export default function ClientPerformance() {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + 1} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={totalCols} className="text-center py-8 text-muted-foreground">
                     No active clients found.
                   </TableCell>
                 </TableRow>
@@ -153,6 +161,17 @@ export default function ClientPerformance() {
                     <TableCell className="sticky left-0 bg-card z-10">
                       <div className="font-medium">{r.client_name}</div>
                       <div className="text-xs text-muted-foreground">{[r.market, r.state].filter(Boolean).join(", ")}</div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {(() => {
+                        const meta = r.ad_account_status ? adsStatusMeta[r.ad_account_status] : undefined;
+                        if (!meta) return <span className="text-xs text-muted-foreground">—</span>;
+                        return (
+                          <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium", meta.className)}>
+                            {meta.label}
+                          </span>
+                        );
+                      })()}
                     </TableCell>
                     {columns.map((c, i) => (
                       <TableCell
@@ -168,6 +187,7 @@ export default function ClientPerformance() {
               {rows.length > 0 && (
                 <TableRow className="bg-muted/40 font-semibold hover:bg-muted/40">
                   <TableCell className="sticky left-0 bg-muted z-10">Total ({rows.length})</TableCell>
+                  <TableCell />
                   {columns.map((c, i) => (
                     <TableCell key={c.key} className={cn("text-right whitespace-nowrap tabular-nums", i > 0 && columns[i - 1].group !== c.group && "border-l border-border")}>
                       {c.fmt(totals[c.key] || 0)}
