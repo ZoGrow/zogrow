@@ -17,7 +17,13 @@ const num = (v: number) => (v || 0).toLocaleString();
 const pct = (v: number) => `${(isFinite(v) ? v : 0).toFixed(1)}%`;
 const div = (a: number, b: number) => (b > 0 ? a / b : 0);
 
-type Row = Record<string, number | string> & { id: string; client_name: string; market: string; state: string };
+type Row = Record<string, number | string> & { id: string; client_name: string; market: string; state: string; ad_account_status?: string | null };
+
+const adsStatusMeta: Record<string, { label: string; className: string }> = {
+  active: { label: "Ads Active", className: "bg-green-500/15 text-green-400 border-green-500/30" },
+  not_running: { label: "Not Running", className: "bg-red-500/15 text-red-400 border-red-500/30" },
+  payment_error: { label: "Payment Error", className: "bg-red-500/15 text-red-400 border-red-500/30" },
+};
 
 const columns: { key: string; label: string; group: "ads" | "isa" | "results"; fmt: (v: number) => string }[] = [
   { key: "ad_spend", label: "Spend", group: "ads", fmt: money },
@@ -89,6 +95,7 @@ export default function ClientPerformance() {
   }, [rows]);
 
   const groups = (["ads", "isa", "results"] as const).map((g) => ({ g, span: columns.filter((c) => c.group === g).length }));
+  const totalCols = columns.length + 2; // client name + ads status
 
   return (
     <div className="space-y-6">
