@@ -58,6 +58,7 @@ interface ClientWithMetrics extends CalculatedMetrics {
   state: string;
   niche: string;
   status: string;
+  ad_account_status?: string | null;
 }
 
 interface AverageMetrics {
@@ -155,6 +156,7 @@ interface Client {
   state: string;
   niche: string;
   status: string;
+  ad_account_status?: string | null;
 }
 
 const normalizeMetric = (m: any): MetricRecord => ({
@@ -263,6 +265,7 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
         state: client.state,
         niche: client.niche,
         status: client.status,
+        ad_account_status: client.ad_account_status ?? null,
         ...kpis,
       };
     });
