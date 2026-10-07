@@ -39,7 +39,7 @@ const clientMetricsItems = [
   { title: "B2C Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "ISA Performance", url: "/isa-performance", icon: Headphones },
-  { title: "Leaderboards", url: "/leaderboards", icon: Trophy },
+  { title: "Client Performance", url: "/client-performance", icon: Trophy },
 ];
 
 const salesItems = [

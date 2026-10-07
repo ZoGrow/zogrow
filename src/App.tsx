@@ -10,7 +10,7 @@ import Dashboard from "@/pages/Dashboard";
 import Clients from "@/pages/Clients";
 import ClientDetail from "@/pages/ClientDetail";
 import Settings from "@/pages/Settings";
-import Leaderboards from "@/pages/Leaderboards";
+import ClientPerformance from "@/pages/ClientPerformance";
 import Users from "@/pages/Users";
 import SalesDashboard from "@/pages/SalesDashboard";
 import SalesEntry from "@/pages/SalesEntry";
@@ -60,7 +60,8 @@ const AppRoutes = () => {
         <Route path="/clients" element={<Clients />} />
         <Route path="/clients/:id" element={<ClientDetail />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/leaderboards" element={<Leaderboards />} />
+        <Route path="/client-performance" element={<ClientPerformance />} />
+        <Route path="/leaderboards" element={<Navigate to="/client-performance" replace />} />
         <Route path="/isa-performance" element={<ISAPerformance />} />
         <Route path="/users" element={<Users />} />
         <Route path="/sales" element={<SalesDashboard />} />
