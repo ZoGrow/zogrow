@@ -208,7 +208,7 @@ async function fetchAllMetrics(from?: string, to?: string): Promise<MetricRecord
   return all;
 }
 
-export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
+export function useRealMetrics(dateRange: { from?: Date; to?: Date }, refreshKey = 0) {
   const [clients, setClients] = useState<Client[]>([]);
   const [metrics, setMetrics] = useState<MetricRecord[]>([]);
   const [previousPeriodMetrics, setPreviousPeriodMetrics] = useState<MetricRecord[]>([]);
@@ -245,7 +245,7 @@ export function useRealMetrics(dateRange: { from?: Date; to?: Date }) {
     };
 
     fetchData();
-  }, [dateRange.from?.getTime(), dateRange.to?.getTime()]);
+  }, [dateRange.from?.getTime(), dateRange.to?.getTime(), refreshKey]);
 
   const totalMetrics = useMemo(() => calculateKPIs(metrics), [metrics]);
 
