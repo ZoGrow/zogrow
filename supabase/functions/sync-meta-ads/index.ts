@@ -135,7 +135,9 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const clientId = body.client_id || null;
     const datePreset = body.date_preset || "today";
-    const backfillDays = body.backfill_days || 0;
+    // Default: re-pull the last 7 days by day so late-settling spend is captured and
+    // dates come from Meta in the ad account's own timezone (matches Ads Manager).
+    const backfillDays = body.date_preset ? (body.backfill_days || 0) : (body.backfill_days || 7);
 
     let query = supabase
       .from("clients")
