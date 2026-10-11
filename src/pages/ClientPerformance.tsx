@@ -2,8 +2,11 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startOfMonth } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { ArrowUpDown, Search } from "lucide-react";
+import { ArrowUpDown, RefreshCw, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -56,7 +59,27 @@ export default function ClientPerformance() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: new Date() });
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<{ key: string; desc: boolean }>({ key: "ad_spend", desc: true });
-  const { loading, clientPerformance } = useRealMetrics({ from: dateRange?.from, to: dateRange?.to });
+  const [syncing, setSyncing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { loading, clientPerformance } = useRealMetrics({ from: dateRange?.from, to: dateRange?.to }, refreshKey);
+
+  const handleSyncAll = async () => {
+    setSyncing(true);
+    try {
+      const [metaRes, ghlRes] = await Promise.all([
+        supabase.functions.invoke("sync-meta-ads", { body: {} }),
+        supabase.functions.invoke("sync-ghl-client-pipeline", { body: { action: "sync" } }),
+      ]);
+      if (metaRes.error) throw metaRes.error;
+      if (ghlRes.error) throw ghlRes.error;
+      if (metaRes.data?.success === false) throw new Error(metaRes.data?.error || "Meta sync failed");
+      toast.success("Ad spend and GHL pipeline data synced");
+      setRefreshKey((k) => k + 1);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to sync data");
+    }
+    setSyncing(false);
+  };
 
   const rows: Row[] = useMemo(() => {
     return clientPerformance
@@ -110,6 +133,10 @@ export default function ClientPerformance() {
             <Input placeholder="Search clients" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-48" />
           </div>
           <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+          <Button variant="outline" onClick={handleSyncAll} disabled={syncing}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", syncing && "animate-spin")} />
+            {syncing ? "Syncing..." : "Sync Data"}
+          </Button>
         </div>
       </div>
 
