@@ -413,45 +413,28 @@ export default function B2BAds() {
           <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
           <Button
             variant="outline"
-            onClick={async () => {
-              toast.info("Syncing B2B ads from Meta...");
-              try {
-                const { data, error } = await supabase.functions.invoke("sync-b2b-ads", {
-                  body: { backfill_days: 1 },
-                });
-                if (error) throw error;
-                toast.success(`Synced ${data?.days_synced || 0} days of B2B ad data`);
-                fetchMetrics();
-              } catch (err: any) {
-                toast.error(err.message || "Sync failed");
-              }
-            }}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Sync Meta
-          </Button>
-          <Button
-            variant="outline"
             disabled={syncingGhl}
             onClick={async () => {
               setSyncingGhl(true);
-              toast.info("Syncing GHL pipeline...");
+              toast.info("Syncing ad spend and GHL pipeline...");
               try {
-                const { error } = await supabase.functions.invoke("sync-ghl-b2b-pipeline", {
-                  body: { action: "sync" },
-                });
-                if (error) throw error;
-                toast.success("GHL pipeline synced");
+                const [metaRes, ghlRes] = await Promise.all([
+                  supabase.functions.invoke("sync-b2b-ads", { body: { backfill_days: 1 } }),
+                  supabase.functions.invoke("sync-ghl-b2b-pipeline", { body: { action: "sync" } }),
+                ]);
+                if (metaRes.error) throw metaRes.error;
+                if (ghlRes.error) throw ghlRes.error;
+                toast.success(`Synced ${metaRes.data?.days_synced || 0} days of ad data + GHL pipeline`);
                 fetchMetrics();
               } catch (err: any) {
-                toast.error(err.message || "GHL sync failed");
+                toast.error(err.message || "Sync failed");
               } finally {
                 setSyncingGhl(false);
               }
             }}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${syncingGhl ? "animate-spin" : ""}`} />
-            {syncingGhl ? "Syncing…" : "Sync GHL"}
+            {syncingGhl ? "Syncing…" : "Sync Data"}
           </Button>
           <Button onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData(initialFormData); }}>
             <Plus className="h-4 w-4 mr-2" />
