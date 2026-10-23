@@ -88,7 +88,7 @@ export default function Dashboard() {
       <RecentActivity />
 
       {/* Performance Intelligence Lists - Clickable to full leaderboards */}
-      <PerformanceLists clients={clientPerformance} agencyAvg={avgMetrics} />
+      <PerformanceLists clients={activeClientPerformance} agencyAvg={avgMetrics} />
 
       {/* Average Metrics Per Partner - All metrics */}
       <AverageMetricsSection avgMetrics={avgMetrics} />
