@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { subDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 import {
@@ -53,6 +53,12 @@ export default function Dashboard() {
     chartData,
   } = useRealMetrics({ from: dateRange?.from, to: dateRange?.to });
 
+  // Only active clients' metrics anywhere on the dashboard
+  const activeClientPerformance = useMemo(
+    () => clientPerformance.filter((c) => c.status === "active"),
+    [clientPerformance]
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -82,7 +88,7 @@ export default function Dashboard() {
       <RecentActivity />
 
       {/* Performance Intelligence Lists - Clickable to full leaderboards */}
-      <PerformanceLists clients={clientPerformance} agencyAvg={avgMetrics} />
+      <PerformanceLists clients={activeClientPerformance} agencyAvg={avgMetrics} />
 
       {/* Average Metrics Per Partner - All metrics */}
       <AverageMetricsSection avgMetrics={avgMetrics} />
@@ -265,7 +271,7 @@ export default function Dashboard() {
       {/* Clients Table */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Client Performance</h2>
-        <ClientsTable data={clientPerformance} agencyAvg={avgMetrics} />
+        <ClientsTable data={activeClientPerformance} agencyAvg={avgMetrics} />
       </div>
     </div>
   );
