@@ -271,7 +271,7 @@ export default function Dashboard() {
       {/* Clients Table */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Client Performance</h2>
-        <ClientsTable data={clientPerformance} agencyAvg={avgMetrics} />
+        <ClientsTable data={activeClientPerformance} agencyAvg={avgMetrics} />
       </div>
     </div>
   );
