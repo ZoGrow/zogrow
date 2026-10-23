@@ -53,6 +53,12 @@ export default function Dashboard() {
     chartData,
   } = useRealMetrics({ from: dateRange?.from, to: dateRange?.to });
 
+  // Only active clients' metrics anywhere on the dashboard
+  const activeClientPerformance = useMemo(
+    () => clientPerformance.filter((c) => c.status === "active"),
+    [clientPerformance]
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
