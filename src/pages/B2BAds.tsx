@@ -57,6 +57,8 @@ interface B2BAdsMetric {
   qualified_intro_showed: number;
   deals_closed: number;
   revenue: number;
+  manual_deals_closed: number;
+  manual_revenue: number;
   cash_collected: number;
   notes: string | null;
 }
@@ -338,8 +340,8 @@ export default function B2BAds() {
         demo_showed: acc.demo_showed + ((m as any).demo_showed || 0),
         qualified_showed: acc.qualified_showed + (m.qualified_showed || 0),
         qualified_intro_showed: acc.qualified_intro_showed + ((m as any).qualified_intro_showed || 0),
-        deals_closed: acc.deals_closed + (m.deals_closed || 0),
-        revenue: acc.revenue + (m.revenue || 0),
+        deals_closed: acc.deals_closed + (m.deals_closed || 0) + ((m as any).manual_deals_closed || 0),
+        revenue: acc.revenue + (m.revenue || 0) + Number((m as any).manual_revenue || 0),
         cash_collected: acc.cash_collected + (m.cash_collected || 0),
       }),
       {
@@ -877,8 +879,8 @@ export default function B2BAds() {
                       <TableCell className="text-right">{(metric as any).demo_showed || 0}</TableCell>
                       <TableCell className="text-right">{metric.qualified_showed || 0}</TableCell>
                       <TableCell className="text-right">{(metric as any).qualified_intro_showed || 0}</TableCell>
-                      <TableCell className="text-right">{metric.deals_closed || 0}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(metric.revenue || 0)}</TableCell>
+                      <TableCell className="text-right">{(metric.deals_closed || 0) + ((metric as any).manual_deals_closed || 0)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency((metric.revenue || 0) + Number((metric as any).manual_revenue || 0))}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           <Button

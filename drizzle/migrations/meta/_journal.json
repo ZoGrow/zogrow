@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793645574396,
+      "tag": "0000_b2b_manual_deal_adjustments",
+      "breakpoints": true
+    }
+  ]
+}

@@ -88,6 +88,8 @@ export type Database = {
           intro_call_booked: number | null
           intro_call_showed: number | null
           leads: number | null
+          manual_deals_closed: number
+          manual_revenue: number
           notes: string | null
           pickups: number | null
           qualified_intro_showed: number | null
@@ -116,6 +118,8 @@ export type Database = {
           intro_call_booked?: number | null
           intro_call_showed?: number | null
           leads?: number | null
+          manual_deals_closed?: number
+          manual_revenue?: number
           notes?: string | null
           pickups?: number | null
           qualified_intro_showed?: number | null
@@ -144,6 +148,8 @@ export type Database = {
           intro_call_booked?: number | null
           intro_call_showed?: number | null
           leads?: number | null
+          manual_deals_closed?: number
+          manual_revenue?: number
           notes?: string | null
           pickups?: number | null
           qualified_intro_showed?: number | null
